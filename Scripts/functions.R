@@ -1,0 +1,146 @@
+##############################################
+#### Fonctions et objets utiles a appeler ####
+##############################################
+
+
+######################0000000000000########################
+
+# Permet de créer un graph vide comprenant uniquement un point blanc, qui pourra ensuite être utilisé dans les graphes
+# représentant les distributions marginales de nuages de points
+
+empty <- ggplot()+geom_point(aes(1,1), colour="white") +
+  theme(                              
+    plot.background = element_blank(), 
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    panel.border = element_blank(), 
+    panel.background = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+
+######################0000000000000########################
+
+
+# Extraire la légende d'un graph pour éviter les répétitions par exemple
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+
+######################0000000000000########################
+
+
+# Boxcox
+
+box.cox <- function(x, lambda) {
+  if (lambda==0) log(x) else ((x)^lambda - 1)/lambda
+}
+
+
+######################0000000000000########################
+
+
+# se
+
+se <- function(x) sqrt(var(x)/length(x))
+
+
+######################0000000000000########################
+
+
+# Test de visualidation ; provient du package Teaching Demos
+
+require(TeachingDemos)
+
+test.visu <- function (x) {
+  if(interactive()) {
+    vis.test(x, vt.qqnorm)
+    vis.test(x, vt.normhist)
+  }
+}
+
+
+######################0000000000000########################
+
+
+# Affichage de matrice de corréaltions. Uniquement les correlations statistiquement significatives
+
+
+#mcor <- cor((BDD[,c(40, 41, 56:65)]), use="complete.obs")
+#mat <- (BDD[,c(40, 41, 56:65)])
+# Print mcor and round to 2 digits
+#round(mcor, digits=2)
+
+require(corrplot)
+
+#col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+#corrplot(mcor, method="shade", shade.col=NA, tl.col="black", tl.srt=45,  col=col(200), addCoef.col="black", addcolorlabel="no", order="FPC")
+
+
+cor.mtest <- function(mat, conf.level = 0.95) {
+  mat <- as.matrix(mat)
+  n <- ncol(mat)
+  p.mat <- lowCI.mat <- uppCI.mat <- matrix(NA, n, n)
+  diag(p.mat) <- 0
+  diag(lowCI.mat) <- diag(uppCI.mat) <- 1
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      tmp <- cor.test(mat[, i], mat[, j], conf.level = conf.level)
+      p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
+      lowCI.mat[i, j] <- lowCI.mat[j, i] <- tmp$conf.int[1]
+      uppCI.mat[i, j] <- uppCI.mat[j, i] <- tmp$conf.int[2]
+    }
+  }
+  return(list(p.mat, lowCI.mat, uppCI.mat))
+}
+
+
+#res1 <- cor.mtest(mat, 0.95)
+## specialized the insignificant value according to the significant level
+#corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05)
+#corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05, insig = "pch", method="shade", shade.col=NA, tl.col="black", tl.srt=45, col=col(200), addCoef.col="black", addcolorlabel="no", order="FPC")
+
+
+### OU ###
+
+require(corrgram)
+
+panel.shadeNtext <- function (x, y, corr = NULL, col.regions, ...) 
+{
+  corr <- cor(x, y, use = "pair")
+  results <- cor.test(x, y, alternative = "two.sided")
+  est <- results$p.value
+  stars <- ifelse(est < 5e-4, "***", 
+                  ifelse(est < 5e-3, "**", 
+                         ifelse(est < 5e-2, "*", "")))
+  ncol <- 14
+  pal <- col.regions(ncol)
+  col.ind <- as.numeric(cut(corr, breaks = seq(from = -1, to = 1, 
+                                               length = ncol + 1), include.lowest = TRUE))
+  usr <- par("usr")
+  rect(usr[1], usr[3], usr[2], usr[4], col = pal[col.ind], 
+       border = NA)
+  box(col = "lightgray")
+  on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- formatC(corr, digits = 2, format = "f")
+  cex.cor <- .8/strwidth("-X.xx")
+  fonts <- ifelse(stars != "", 2,1)
+  # option 1: stars:
+  #text(0.5, 0.4, paste0(r,"\n", stars), cex = cex.cor)
+  # option 2: bolding:
+  text(0.5, 0.5, r, cex = cex.cor, font=fonts)
+}
+
+
+# Call the corrgram function with the new panel functions
+# NB: call on the data, not the correlation matrix
+#corrgram(BDD, type="data", lower.panel=panel.shadeNtext,  upper.panel=NULL)
