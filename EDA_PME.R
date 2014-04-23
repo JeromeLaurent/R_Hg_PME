@@ -18,7 +18,7 @@ require(gtable) # alternative pour arranger graphe ensembles
 require(missMDA)
 
 
-
+source("Scripts/functions.R")
 
 # Chargement BDD comprenant donnees Criques Nouvelle-France, Chien et Trois Sauts
 
