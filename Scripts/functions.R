@@ -28,6 +28,8 @@ empty <- ggplot()+geom_point(aes(1,1), colour="white") +
 
 # Extraire la légende d'un graph pour éviter les répétitions par exemple
 
+# a.gplot est un graph produit par ggplot
+
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
@@ -40,6 +42,8 @@ g_legend<-function(a.gplot){
 
 # Boxcox
 
+# x un vecteur, lambda un coefficient
+
 box.cox <- function(x, lambda) {
   if (lambda==0) log(x) else ((x)^lambda - 1)/lambda
 }
@@ -50,6 +54,8 @@ box.cox <- function(x, lambda) {
 
 # se
 
+# x étant un vecteur
+
 se <- function(x) sqrt(var(x)/length(x))
 
 
@@ -59,6 +65,9 @@ se <- function(x) sqrt(var(x)/length(x))
 # Test de visualidation ; provient du package Teaching Demos
 
 require(TeachingDemos)
+
+# avec x un vecteur dont on veut comparer la distribution à des générations aléatoires de distributions normales
+# afin d'estimer si il existe des différences visuelles ou non
 
 test.visu <- function (x) {
   if(interactive()) {
@@ -73,17 +82,17 @@ test.visu <- function (x) {
 
 # Affichage de matrice de corréaltions. Uniquement les correlations statistiquement significatives
 
+require(corrplot)
 
 #mcor <- cor((BDD[,c(40, 41, 56:65)]), use="complete.obs")
 #mat <- (BDD[,c(40, 41, 56:65)])
 # Print mcor and round to 2 digits
 #round(mcor, digits=2)
-
-require(corrplot)
-
 #col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
 #corrplot(mcor, method="shade", shade.col=NA, tl.col="black", tl.srt=45,  col=col(200), addCoef.col="black", addcolorlabel="no", order="FPC")
 
+
+## Avec "mat" une matrice de corrélation obtenue à partir de la fonction cor()
 
 cor.mtest <- function(mat, conf.level = 0.95) {
   mat <- as.matrix(mat)
@@ -112,6 +121,9 @@ cor.mtest <- function(mat, conf.level = 0.95) {
 ### OU ###
 
 require(corrgram)
+
+# Se renseigner, je ne suis pas tout à fait sûr de comprendre exactement son fonctionnement.
+
 
 panel.shadeNtext <- function (x, y, corr = NULL, col.regions, ...) 
 {
