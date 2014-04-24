@@ -23,7 +23,7 @@ source("Scripts/data_cleaning.R")
 
 # Chargement BDD_PME comprenant donnees Criques Nouvelle-France, Chien et Trois Sauts
 
-BDD_PME <-read.csv("Data/2014_04_11_subset_BDD_PME.csv", sep=";", stringsAsFactors = FALSE) # Chemin relatif
+BDD_PME <-read.csv("Data/2014_04_11_subset_BDD.csv", sep=";", stringsAsFactors = FALSE) # Chemin relatif
 # stringsAsFactors = FALSE permet d'eviter que les variables numeriques soient reconnues comme des facteurs 
 
 

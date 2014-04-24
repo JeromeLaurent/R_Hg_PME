@@ -9,11 +9,11 @@
 # Chargement BDD_PME comprenant les données PME, c'est à dire les criques Nouvelle-France, Chien et Trois Sauts
 ###
 
-BDD_PME <-read.csv("Data/2014_04_11_subset_BDD_PME.csv", sep=";", stringsAsFactors = FALSE) # Chemin relatif
+BDD_PME <-read.csv("Data/2014_04_11_subset_BDD.csv", sep=";", stringsAsFactors = FALSE) # Chemin relatif
 # stringsAsFactors = FALSE permet d'éviter que les variables numériques soient reconnues comme des facteurs 
 
 
-str(BDD_PME)
+# str(BDD_PME)
 
 
 BDD_PME$Code_Station <- as.factor(BDD_PME$Code_Station)
@@ -59,7 +59,7 @@ sub_BDD_PME <- BDD_PME[!(is.na(BDD_PME$Cr_ppm)), ]
 
 BDD <- read.csv("Data/2014_04_15_BDD_PME.csv", sep=";", stringsAsFactors = FALSE)
 
-str(BDD)
+# str(BDD)
 
 BDD$pds_g<- as.numeric(BDD$pds_g) # Pas d'explication concernant le besoin de forcer la classe "numériqueé sur cette variable
 BDD$Pression <- as.factor(BDD$Pression)
