@@ -89,3 +89,5 @@ BDD$Regime_principal <- factor(BDD$Regime_principal, levels = c( "Carnivore", "O
 ###
 
 BDD.sansNA <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ]
+
+BDD.sansNA$station <- droplevels(BDD.sansNA$station)

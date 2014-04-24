@@ -1,0 +1,23 @@
+
+
+ Station correspondant à chaque numéro 
+
+
+ [1] "Affluent_Crique_Paira"          "Apa"                            "Crique_Bastien"                
+ [4] "Crique_Bordel"                  "Crique_Cacao"                   "Crique_Chien_1"                
+ [7] "Crique_Chien_2"                 "Crique_Chien_3"                 "Crique_Chien_4"                
+[10] "Crique_Chien_5"                 "Crique_Chien_7"                 "Crique_Chien_8"                
+[13] "Crique_clando"                  "Crique_Dachine"                 "Crique_des_Cascades"           
+[16] "Crique_Eau_Claire"              "Crique_Galibi"                  "Crique_Gargoulette"            
+[19] "Crique_Georges"                 "Crique_Grenouille"              "Crique_Humus"                  
+[22] "Crique_Kapiri_1"                "Crique_Kapiri_2"                "Crique_Kapiri_4"               
+[25] "Crique_Kapiri_5"                "Crique_Korossibo"               "Crique_Lucifer"                
+[28] "Crique_Macouria"                "Crique_Marie"                   "Crique_Minette"                
+[31] "Crique_Montagne"                "Crique_Nouvelle_France_1"       "Crique_Nouvelle_France_2"      
+[34] "Crique_Nouvelle_France_3"       "Crique_Nouvelle_France_4"       "Crique_Nouvelle_France_5"      
+[37] "Crique_Nouvelle_France_6"       "Crique_Organabo"                "Crique_Paracou"                
+[40] "Crique_Penta"                   "Crique_Petit"                   "Crique_Petit_Laussat_Amont_(3)"
+[43] "Crique_Petit_laussat_Aval_(1)"  "Crique_Pied_Saut"               "Crique_Piste_Saint_Elie"       
+[46] "Crique_Quad"                    "Crique_relache_1"               "Crique_relache_2"              
+[49] "Crique_Saul"                    "Crique_SM"                      "Crique_Toussaint"              
+[52] "Crique_Trois_Sauts_Amont"       "Crique_Trois_Sauts_Aval"        "Crique_Violette"   

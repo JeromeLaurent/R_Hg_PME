@@ -1546,7 +1546,7 @@ require(agricolae)
 kruskal.test(conc_Hg_muscle_ppm ~ station, data = BDD.sansNA) # Il esxiste des differences significatives
 
 
-comparison <- kruskal(BDD.sansNA$conc_Hg_muscle_ppm, BDD.sansNA$station, alpha = 0.05, p.adj = "hochberg")
+comparison <- kruskal(BDD.sansNA$conc_Hg_muscle_ppm, BDD.sansNA$station, alpha = 0.05, p.adj = "holm")
 
 posthoc <- comparison[['groups']]
 posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
@@ -1566,11 +1566,15 @@ test_f <- merge(test, posthoc, by.x = "station", by.y = "trt") # Les 2 tableaux 
 colnames(test_f)[2] <- "upper"
 colnames(test_f)[4] <- "signif"
 test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
-phoch <- p0 + geom_text(aes(station, upper + 0.1, label = signif), data = test_f, vjust = -2, color = "red") + scale_x_discrete(breaks = c(levels(BDD.sansNA$station)), labels=c(1:54)) +
-  ggtitle("Correction Hochberg")
+p0 <- p0 + geom_text(aes(station, upper + 0.1, label = signif), data = test_f, vjust = -2, color = "red") +
+  scale_x_discrete(breaks = c(levels(BDD.sansNA$station)), labels=c(1:54)) +
+  scale_colour_discrete(breaks = levels(BD$Pression_anthro), labels = c("Agriculture", "Barrage", "Déforestation", "Orpaillage ancien", "Orpaillage illégal récent", "Orpaillage illégal récent", "Piste", "Référence")) +
+  labs(colour = "Pression anthropique", y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec", x = "N° de la station", title = "[Hg] dans les muscles de poissons selon les stations")
 
 
-grid.arrange(pnone, pbonf, pholm, phoch, ncol = 1, nrow = 4)
+pdf("Graph/Hgmuscle_stations.pdf", width = 20, height = 15) # la fction pdf enregistre directement ds le dossier
+print(p0)
+dev.off()
 
 
 #### Repartition des concentrations selon regime alimentaire
