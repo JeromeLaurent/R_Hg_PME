@@ -45,11 +45,19 @@ BDD_PME$Regime_principal <- factor(BDD_PME$Regime_principal, levels = c( "Carniv
 ######################0000000000000########################
 
 ###
-# Subset de données à partir de la BDD_PME PME ; uniquement les échantillons ayant des métaux dosés
+# Subset de données à partir de la BDD_PME  ; uniquement les échantillons ayant des métaux dosés
 ###
 
 sub_BDD_PME <- BDD_PME[!(is.na(BDD_PME$Cr_ppm)), ]
 
+
+######################0000000000000########################
+
+###
+# Subset de données à partir de la BDD_PME  ; uniquement les échantillons ayant du Hg dosé dans le muscle
+###
+
+sub_BDD <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ]
 
 ######################0000000000000########################
 
@@ -85,7 +93,7 @@ BDD$Regime_principal <- factor(BDD$Regime_principal, levels = c( "Carnivore", "O
 ######################0000000000000########################
 
 ###
-# Subset comprenant tous les échantillons ayant des métaux dosés dans le muscle
+# Subset comprenant tous les échantillons ayant du Hg dosé dans le muscle
 ###
 
 BDD.sansNA <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ]
