@@ -123,8 +123,17 @@ scatter <- ggplot(BDD_PME, aes(x = ls_mm, y = pds_g)) +
 #geom_smooth(aes(color = Regime_alter), method = "loess")
 
 
+#### Distribution poids des individus
 
+ggplot(BDD_PME, aes(x = pds_g, y = ..density..)) +
+  geom_histogram(fill="cornsilk", colour="grey60", size=.2, binwidth = 10) +
+  geom_density()
 
+#### Distribution taille des individus
+
+ggplot(BDD_PME, aes(x = ls_mm, y = ..density..)) +
+  geom_histogram(fill="cornsilk", colour="grey60", size=.2, binwidth = 5) +
+  geom_density()
 
 ##___##
 
@@ -1046,25 +1055,39 @@ ggplot( filter(BDD_PME, Regime_principal %in% "Omnivore"), aes(x = d15N, y = con
 
 
 # Vue d'ensemble tous poissons selon sp
-df.sp <- BDD_PME %.% # Selection BDD_PME
+df.sp.muscle <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)), ] %.% # Selection BDD_PME
   group_by(Code) %.% # Selection sp
   summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)), d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Selection donnees a  calculer
 # Toujours la meme question : comment faire pour appliquer "summarise" sur un facteur et ainsi ajouter l'information Regime_alimenaire pour chaque Code...
-df.sp <- na.omit(merge(df.sp, select(BDD_PME, Regime_principal, Code), by = 'Code')) # Solution potentielle
 
-ggplot( BDD_PME, aes(x = d15N, y = conc_Hg_muscle_ppm, color = Code)) +
+df.sp.muscle <- na.omit(merge(df.sp.muscle, select(BDD_PME, Regime_alter, Code), by = 'Code')) # Solution potentielle. Malheureusement, nombreux duplicats
+
+df.sp.muscle <- df.sp.muscle[!duplicated(df.sp.muscle[,'Code']),] # Sélectionne uniquement un ligne par code uniques. Comme toutes les valeurs sont dupliquées, la ligne selectionnée n'a pas d'importance
+
+
+ggplot( df.sp.muscle, aes(x = d15N, y = conc_Hg_muscle_ppm, color = Regime_alter)) +
   #geom_point(aes(shape=ordre)) +
-  geom_point(data = df.sp, aes(x = d15N_mean, y = Hg_muscle_mean, color = Code), size = 4) +
-  geom_text(data = df.sp, aes(x = d15N_mean, y = Hg_muscle_mean, color = Code, label = Code), hjust=1, vjust=-1) +
-  geom_errorbarh(data = df.sp, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Code), height = .1) + 
-  geom_errorbar(data = df.sp, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Code), width = .1)
+  geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+  geom_text(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = Code), hjust=1, vjust=-1) +
+  geom_errorbarh(data = df.sp.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .1) + 
+  geom_errorbar(data = df.sp.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .1)
+
+ggplot( BDD_PME, aes(x = d15N, y = conc_Hg_muscle_ppm, color = Regime_alter)) +
+  geom_point(alpha = 0.6) +
+  geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+  geom_text(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = Code), hjust=1, vjust=-1) 
+  #geom_errorbarh(data = df.sp.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .1) + 
+  #geom_errorbar(data = df.sp.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .1)
+
+
+
 
 ggplot( BDD_PME, aes(x = d13C, y = d15N, color = Code)) +
   #geom_point(aes(shape=ordre)) +
-  geom_point(data = df.sp, aes(y = d15N_mean, x = d13C_mean, color = Code), size = 4) +
-  geom_text(data = df.sp, aes(y = d15N_mean, x = d13C_mean, color = Code, label = Code), hjust=1, vjust=-1) +
-  geom_errorbarh(data = df.sp, aes(xmin = d13C_mean + d13C_se, xmax = d13C_mean - d13C_se, y = d15N_mean, x = d13C_mean, colour = Code), height = .1) + 
-  geom_errorbar(data = df.sp, aes(ymin = d15N_mean - d15N_se, ymax = d15N_mean + d15N_se, x = d13C_mean, y = d15N_mean, colour = Code), width = .1)
+  geom_point(data = df.sp.muscle, aes(y = d15N_mean, x = d13C_mean, color = Code), size = 4) +
+  geom_text(data = df.sp.muscle, aes(y = d15N_mean, x = d13C_mean, color = Code, label = Code), hjust=1, vjust=-1) +
+  geom_errorbarh(data = df.sp.muscle, aes(xmin = d13C_mean + d13C_se, xmax = d13C_mean - d13C_se, y = d15N_mean, x = d13C_mean, colour = Code), height = .1) + 
+  geom_errorbar(data = df.sp.muscle, aes(ymin = d15N_mean - d15N_se, ymax = d15N_mean + d15N_se, x = d13C_mean, y = d15N_mean, colour = Code), width = .1)
 
 
 # Vue d'ensemble tous poissons selon regime
@@ -1081,39 +1104,51 @@ ggplot(BDD_PME, aes(x = d13C, y = d15N)) +
   geom_errorbar(data = df.reg, aes(ymin = d15N_mean - d15N_se, ymax = d15N_mean + d15N_se, x = d13C_mean, y = d15N_mean, colour = Regime_alter), width = .05)
 
 
-pl1 <- ggplot( BDD_PME, aes(x = d15N, y = conc_Hg_muscle_ppm)) +
-  #geom_point(aes(color = Regime_alter), alpha = 0.65) +
-  geom_point(data = na.omit(df.reg), aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
-  geom_text(data = na.omit(df.reg), aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = Regime_alter), hjust=1.02, vjust=-1, size = 6.5) +
-  geom_errorbarh(data = na.omit(df.reg), aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
-  geom_errorbar(data = na.omit(df.reg), aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05)
+df.reg.muscle <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)), ] %.% # Selection BDD_PME
+  group_by(Regime_alter) %.% # Selection sp
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)), d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Selection donnees a  calculer
 
-pl11 <- ggplot( BDD_PME, aes(x = d15N, y = conc_Hg_foie_ppm)) +
-  #geom_point(aes(color = Regime_alter), alpha = 0.65) +
-  geom_point(data = na.omit(df.reg), aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter), size = 4) +
-  geom_text(data = na.omit(df.reg), aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = Regime_alter), hjust=1.02, vjust=-1, size = 6.5) +
-  geom_errorbarh(data = na.omit(df.reg), aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
-  geom_errorbar(data = na.omit(df.reg), aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05)
+df.reg.muscle <- df.reg.muscle[- nrow(df.reg.muscle),] # Enlève la dernière ligne ("inconnu")
+
+# Avec na.omit car certains régimes n'ont pas toutes les informations ([Hg] et d15N)
+pl1 <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
+ # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
+  geom_point(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+  geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = Regime_alter), hjust=1.02, vjust=-1, size = 6.5) +
+  geom_errorbarh(data = df.reg.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
+  geom_errorbar(data = df.reg.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05)
 
 
 
-pdf("2014_04_08_[Hg]_regime.pdf", width = 14, height = 9) # la fction pdf enregistre directement ds le dossier
-print(pl1)
-dev.off()
 
-pl2 <- ggplot( BDD_PME, aes(x = d15N, y = conc_Hg_foie_ppm)) +
-  geom_point(aes(color = Regime_alter), alpha = 0.65) +
-  geom_point(data = df.reg, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter), size = 4) +
-  geom_text(data = df.reg, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
-  geom_errorbarh(data = df.reg, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
-  geom_errorbar(data = df.reg, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05)
+df.reg.foie <- BDD_PME[!(is.na(BDD_PME$conc_Hg_foie_ppm)) & !(is.na(BDD_PME$d15N)), ] %.% # Selection BDD_PME
+  group_by(Regime_alter) %.% # Selection sp
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)), d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C)), Hg_foie_mean = mean(na.omit(conc_Hg_foie_ppm)), Hg_foie_se = se(na.omit(conc_Hg_foie_ppm))) # Selection donnees a  calculer
 
-pl3 <- ggplot( BDD_PME, aes(x = d15N, y = conc_Hg_branchie_ppm)) +
-  geom_point(aes(color = Regime_alter), alpha = 0.65) +
-  geom_point(data = df.reg, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter), size = 4) +
-  geom_text(data = df.reg, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
-  geom_errorbarh(data = df.reg, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
-  geom_errorbar(data = df.reg, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05)
+df.reg.foie <- na.omit(df.reg.foie)
+
+pl2 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_foie_ppm)), ], aes(x = d15N, y = conc_Hg_foie_ppm)) +
+ # geom_point(aes(color = Regime_alter), alpha = 0.65) +
+  geom_point(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter), size = 4) +
+  geom_text(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
+  geom_errorbarh(data = df.reg.foie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
+  geom_errorbar(data = df.reg.foie, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05)
+
+
+df.reg.branchie <- BDD_PME[!(is.na(BDD_PME$conc_Hg_branchie_ppm)) & !(is.na(BDD_PME$d15N)), ] %.% # Selection BDD_PME
+  group_by(Regime_alter) %.% # Selection sp
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)), d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C)), Hg_branchie_mean = mean(na.omit(conc_Hg_branchie_ppm)), Hg_branchie_se = se(na.omit(conc_Hg_branchie_ppm))) # Selection donnees a  calculer
+
+df.reg.branchie <- na.omit(df.reg.branchie)
+
+pl3 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_branchie_ppm)), ], aes(x = d15N, y = conc_Hg_branchie_ppm)) +
+#  geom_point(aes(color = Regime_alter), alpha = 0.65) +
+  geom_point(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter), size = 4) +
+  geom_text(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
+  geom_errorbarh(data = df.reg.branchie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
+  geom_errorbar(data = df.reg.branchie, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05)
+
+
 
 
 legend <- g_legend(pl1)
@@ -1694,3 +1729,27 @@ p0 <- p0 + geom_text(aes(station, upper + 0.1, label = signif), data = test_f, v
 ggplot(BDD.moenk, aes(x = pds_g, y = conc_Hg_muscle_ppm)) +
   geom_point() + geom_smooth()
 
+
+######################0000000000000########################
+
+sort(table(sub_BDD$Genre),decreasing=TRUE)[1:3]
+
+# Mohenkausia est également le genre le plus abondant au niveau des 3 stations de PME
+
+ggplot(sub_BDD[sub_BDD$Genre %in% "Moenkhausia",], aes(x = ls_mm, y = pds_g)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(sub_BDD[sub_BDD$Genre %in% "Moenkhausia",], aes(x = ls_mm, y = conc_Hg_muscle_ppm)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(sub_BDD[sub_BDD$Genre %in% "Moenkhausia",], aes(x = pds_g, y = conc_Hg_muscle_ppm)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(BDD, aes(y = conc_Hg_muscle_ppm, x = 1)) +
+  geom_boxplot()
+
+ggplot(BDD_PME, aes(y = conc_Hg_muscle_ppm, x = 1)) +
+  geom_boxplot()
