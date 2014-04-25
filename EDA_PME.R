@@ -954,7 +954,7 @@ compa <- kruskalmc()
 # Test FAMD
 
 require(FactoMineR)
-df.famd <- select(sub_BDD_PME, Groupe_station, Code_Station, code_sp, pds_g, ordre, Genre, Regime_principal, d13C, d15N, conc_Hg_foie_ppm, conc_Hg_muscle_ppm, conc_Hg_branchie_ppm, Cr_ppm, Co_ppm, Ni_ppm, Cu_ppm, Zn_ppm, As_ppm, Se_ppm, Cd_ppm, Pb_ppm)
+df.famd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Se_ppm)
 na.famd <- FAMD(na.omit(df.famd))
 summary(na.famd)
 
@@ -1073,7 +1073,7 @@ ggplot( df.sp.muscle, aes(x = d15N, y = conc_Hg_muscle_ppm, color = Regime_alter
   geom_errorbar(data = df.sp.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .1)
 
 ggplot( BDD_PME, aes(x = d15N, y = conc_Hg_muscle_ppm, color = Regime_alter)) +
-  geom_point(alpha = 0.6) +
+ # geom_point(alpha = 0.6) +
   geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
   geom_text(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = Code), hjust=1, vjust=-1) 
   #geom_errorbarh(data = df.sp.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .1) + 
@@ -1612,6 +1612,38 @@ print(p0)
 dev.off()
 
 
+## Concentration selon impact anthropique :
+
+
+BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro) # Subset plus simple a  manipuler
+
+means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD, mean)
+means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
+
+kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD) # Il esxiste des differences significatives
+
+comparison <- kruskal(BD$conc_Hg_muscle_ppm, BD$Pression_anthro, alpha = 0.05, p.adj = "holm")
+
+posthoc <- comparison[['groups']]
+posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
+
+
+p0 <- ggplot(BD, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+  geom_boxplot(aes(colour = Pression_anthro)) +
+  #scale_colour_brewer(palette="Set3") +
+  stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
+               shape = 18, size = 3,show_guide = FALSE) + 
+  geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+lettpos <- function(BD) boxplot(BD$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
+test <- ddply(BD, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+colnames(test_f)[2] <- "upper"
+colnames(test_f)[4] <- "signif"
+test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
+p0 <- p0 + geom_text(aes(Pression_anthro, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") 
+ 
+
+
 #### Repartition des concentrations selon regime alimentaire
 
 ## Omnivores(Omnivores Invertivores)
@@ -1753,3 +1785,119 @@ ggplot(BDD, aes(y = conc_Hg_muscle_ppm, x = 1)) +
 
 ggplot(BDD_PME, aes(y = conc_Hg_muscle_ppm, x = 1)) +
   geom_boxplot()
+
+
+
+#######################Test régression########################
+
+
+
+#r = lm(rank(sub_BDD_PME$Hg_ppm) ~ sub_BDD_PME$station + sub_BDD_PME$Regime_alter)
+#r1 = anova(r)
+#
+#r = lm(rank(sub_BDD_PME$Hg_ppm) ~ sub_BDD_PME$station * sub_BDD_PME$Regime_alter)
+#r1 = anova(r)
+#
+#
+## test de Scheirer-Ray-Hare # Est-ce que le fait que le nombre d'échantillons ne soit pas constant pour chaque condition n'est pas problématique ?
+#SHR<-function(rppm,rf,sf){
+#  lm1 <- lm(rank(rppm)~rf*sf)
+# anolm1 <- anova(lm1)
+# MS <-  anolm1[1:3,1:3]
+# MS[,4] <- MS[,2]/(length(rppm)*(length(rppm)+1)/12)
+# MS[,5] <- (1-pchisq(MS[,4],MS[,1]))
+# colnames(MS)[4:5] <- c(“H”,”pvalue”)
+# MS
+#}
+
+
+
+#rb=aov(lm(rank(sub_BDD_PME$Hg_ppm) ~ sub_BDD_PME$station + sub_BDD_PME$Regime_alter))
+#TukeyHSD(rb)
+
+#tukeyy=TukeyHSD(rb)
+#tukeyy$station
+#tukeyy$Regime_alter
+
+#tkr=tukeyy$regime
+#tks=tukeyy$station
+
+#### pour k hypotèses, il y a k*(k-1)/2 comparaisons à faire
+
+# En attente, peu pertinent car analyse des interaction trop complexe
+
+
+# Se rabattre sur AFC
+
+
+######## test AFC #######
+
+# Première question : AFC (FCA)ou ACM (CMA) ?
+
+# Plus de 2 variables donc plutôt ACM.
+
+# Il faut convertir les variables quantitatives en qualitatives. Pour cela, utiliser la fonction cut()
+
+Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Se_ppm)
+
+Bd$Se_qual <- cut(Bd$Se_ppm, 5)
+
+require(gtools)
+
+Bd$Se_qual2 <- quantcut(Bd$Se_ppm, q = seq(0, 1, by = 0.2))
+Bd$Se_qual2
+Bd2 <- Bd[,- 3]
+Bd2$Se_qual <- as.numeric(Bd2$Se_qual)
+Bd2$Se_qual2 <- as.numeric(Bd2$Se_qual2)
+Bd_quint <- Bd2 [, - 3]
+Bd_cut <- Bd2 [, - 4]
+
+cats = apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+
+mca1 = MCA(Bd2)
+
+mca1_vars_df = data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+
+# data frame with observation coordinates
+mca1_obs_df = data.frame(mca1$ind$coord)
+
+# plot of variable categories
+ggplot(data=mca1_vars_df, 
+       aes(x = Dim.1, y = Dim.2, label = rownames(mca1_vars_df))) +
+  geom_hline(yintercept = 0, colour = "gray70") +
+  geom_vline(xintercept = 0, colour = "gray70") +
+  geom_text(aes(colour=Variable)) +
+  ggtitle("MCA plot of variables using R package FactoMineR")
+
+# MCA plot of observations and categories
+ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
+  geom_hline(yintercept = 0, colour = "gray70") +
+  geom_vline(xintercept = 0, colour = "gray70") +
+  geom_point(colour = "gray50", alpha = 0.7) +
+  geom_density2d(colour = "gray80") +
+  geom_text(data = mca1_vars_df, 
+            aes(x = Dim.1, y = Dim.2, 
+                label = rownames(mca1_vars_df), colour = Variable)) +
+  ggtitle("MCA plot of variables using R package FactoMineR") +
+  scale_colour_discrete(name = "Variable")
+
+
+# Ward Hierarchical Clustering
+d <- dist(Bd2, method = "euclidean") # distance matrix
+fit <- hclust(d, method="ward")
+plot(fit) # display dendogram
+groups <- cutree(fit, k=5) # cut tree into 5 clusters
+# draw dendogram with red borders around the 5 clusters
+rect.hclust(fit, k=5, border="red") 
+
+
+
+require(pvclust)
+
+# Ward Hierarchical Clustering with Bootstrapped p values
+
+fit <- pvclust(mydata, method.hclust="ward",
+               method.dist="euclidean")
+plot(fit) # dendogram with p values
+# add rectangles around groups highly supported by the data
+pvrect(fit, alpha=.95) 
