@@ -204,7 +204,7 @@ source("Scripts/data_cleaning.R")
       scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
-            x = "Pression anthropique", title = "[Hg] dans les muscles d'e poissons'omnivores selon les pressions anthropiques exercées sur les stations") +
+            x = "Pression anthropique", title = "[Hg] dans les muscles d'omnivores selon les pressions anthropiques exercées sur les stations") +
       geom_hline(aes(yintercept = 2.5), color = "red")
     
     
@@ -213,5 +213,127 @@ source("Scripts/data_cleaning.R")
     dev.off()
     
     
-  ### Impact des pressions anthropiques sur les régimes principaux
+  ### Impact des pressions anthropiques sur les régimes détaillés
+    
+        
+    BD.omn.inver <- BD[BD$Regime_alter %in% "Omnivore_Invertivore",]
+    BD.car.inver <- BD[BD$Regime_alter %in% "Carnivore_Invertivore",]
+    BD.car.pisc <- BD[BD$Regime_alter %in% "Carnivore_Piscivore",]
+    # BD.car.insec <- BD[BD$Regime_alter %in% "Carnivore_Insectivore",] # pas de données partout
+
+    
+    # Omnivores Invertivores
+    
+    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.omn.inver, mean)
+    means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
+    
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.omn.inver) # Il esxiste des differences significatives
+    
+    comparison <- kruskal(BD.omn.inver$conc_Hg_muscle_ppm, BD.omn.inver$Pression_anthro, alpha = 0.05, p.adj = "holm")
+    
+    posthoc <- comparison[['groups']]
+    posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
+    
+    
+    p0 <- ggplot(BD.omn.inver, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+      geom_boxplot() +
+      #scale_colour_brewer(palette="Set3") +
+      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) + 
+      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+    lettpos <- function(BD.omn.inver) boxplot(BD.omn.inver$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
+    test <- ddply(BD.omn.inver, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    colnames(test_f)[2] <- "upper"
+    colnames(test_f)[4] <- "signif"
+    test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
+    p0 <- p0 + geom_text(aes(Pression_anthro, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+      scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                       labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
+            x = "Pression anthropique", title = "[Hg] dans les muscles d'omnivores invertivores selon les pressions anthropiques exercées sur les stations") +
+      geom_hline(aes(yintercept = 2.5), color = "red")
+    
+    
+    pdf("Graph/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(p0)
+    dev.off()
+    
+    
+    # Carnivores Invertivores
+    
+    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.car.inver, mean)
+    means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
+    
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.car.inver) # Il esxiste des differences significatives
+    
+    comparison <- kruskal(BD.car.inver$conc_Hg_muscle_ppm, BD.car.inver$Pression_anthro, alpha = 0.05, p.adj = "holm")
+    
+    posthoc <- comparison[['groups']]
+    posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
+    
+    
+    p0 <- ggplot(BD.car.inver, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+      geom_boxplot() +
+      #scale_colour_brewer(palette="Set3") +
+      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) + 
+      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+    lettpos <- function(BD.car.inver) boxplot(BD.car.inver$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
+    test <- ddply(BD.car.inver, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    colnames(test_f)[2] <- "upper"
+    colnames(test_f)[4] <- "signif"
+    test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
+    p0 <- p0 + geom_text(aes(Pression_anthro, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+      scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                       labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
+            x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores invertivores selon les pressions anthropiques exercées sur les stations") +
+      geom_hline(aes(yintercept = 2.5), color = "red")
+    
+    
+    pdf("Graph/Hg-muscle_pression-anthropique_carnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(p0)
+    dev.off()
+    
+    # Carnivores Piscivores
+    
+    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.car.pisc, mean)
+    means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
+    
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.car.pisc) # Il esxiste des differences significatives
+    
+    comparison <- kruskal(BD.car.pisc$conc_Hg_muscle_ppm, BD.car.pisc$Pression_anthro, alpha = 0.05, p.adj = "holm")
+    
+    posthoc <- comparison[['groups']]
+    posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
+    
+    
+    p0 <- ggplot(BD.car.pisc, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+      geom_boxplot() +
+      #scale_colour_brewer(palette="Set3") +
+      geom_hline(aes(yintercept = 2.5), color = "red") +
+      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) + 
+      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.15), color = "blue")
+    lettpos <- function(BD.car.pisc) boxplot(BD.car.pisc$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
+    test <- ddply(BD.car.pisc, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    colnames(test_f)[2] <- "upper"
+    colnames(test_f)[4] <- "signif"
+    test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
+    p0 <- p0 + geom_text(aes(Pression_anthro, upper - 0.5, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+      scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                       labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
+            x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores piscivores selon les pressions anthropiques exercées sur les stations")
+      
+    
+    
+    pdf("Graph/Hg-muscle_pression-anthropique_carnivores-piscivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(p0)
+    dev.off()
+    
+
     
