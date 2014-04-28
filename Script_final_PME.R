@@ -92,7 +92,7 @@ source("Scripts/data_cleaning.R")
     
   ### Impact des pressions anthropiques
     
-    BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro) # Subset plus simple a  manipuler
+    BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro, Regime_principal, Regime_alter) # Subset plus simple a  manipuler
     
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
@@ -128,3 +128,90 @@ source("Scripts/data_cleaning.R")
     pdf("Graph/Hg-muscle_pression-anthropique.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
+
+  
+  ### Impact des pressions anthropiques sur les régimes principaux
+    
+    BD.carn <- BD[BD$Regime_principal %in% "Carnivore",]
+    BD.omni <- BD[BD$Regime_principal %in% "Omnivore",]
+    # BD.herbi <- BD[BD$Regime_principal %in% "Herbivore",] # Trop peu d'échantillons, qui plus est inégalement répartis
+    # BD.detri <- BD[BD$Regime_principal %in% "Detritivore",] # Uniquement 16 indiv donc pas assez de données
+    
+    # Carnivores
+    
+    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.carn, mean)
+    means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
+    
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.carn) # Il esxiste des differences significatives
+    
+    comparison <- kruskal(BD.carn$conc_Hg_muscle_ppm, BD.carn$Pression_anthro, alpha = 0.05, p.adj = "holm")
+    
+    posthoc <- comparison[['groups']]
+    posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
+    
+    
+    p0 <- ggplot(BD.carn, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+      geom_boxplot() +
+      #scale_colour_brewer(palette="Set3") +
+      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) + 
+      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+    lettpos <- function(BD.carn) boxplot(BD.carn$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
+    test <- ddply(BD.carn, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    colnames(test_f)[2] <- "upper"
+    colnames(test_f)[4] <- "signif"
+    test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
+    p0 <- p0 + geom_text(aes(Pression_anthro, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+      scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                       labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
+            x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores selon les pressions anthropiques exercées sur les stations") +
+      geom_hline(aes(yintercept = 2.5), color = "red")
+    
+    
+    pdf("Graph/Hg-muscle_pression-anthropique_carnivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(p0)
+    dev.off()
+    
+    
+    # Omnivores
+    
+    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.omni, mean)
+    means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
+    
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.omni) # Il esxiste des differences significatives
+    
+    comparison <- kruskal(BD.omni$conc_Hg_muscle_ppm, BD.omni$Pression_anthro, alpha = 0.05, p.adj = "holm")
+    
+    posthoc <- comparison[['groups']]
+    posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
+    
+    
+    p0 <- ggplot(BD.omni, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+      geom_boxplot() +
+      #scale_colour_brewer(palette="Set3") +
+      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) + 
+      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+    lettpos <- function(BD.omni) boxplot(BD.omni$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
+    test <- ddply(BD.omni, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    colnames(test_f)[2] <- "upper"
+    colnames(test_f)[4] <- "signif"
+    test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
+    p0 <- p0 + geom_text(aes(Pression_anthro, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+      scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                       labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
+            x = "Pression anthropique", title = "[Hg] dans les muscles d'e poissons'omnivores selon les pressions anthropiques exercées sur les stations") +
+      geom_hline(aes(yintercept = 2.5), color = "red")
+    
+    
+    pdf("Graph/Hg-muscle_pression-anthropique_omnivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(p0)
+    dev.off()
+    
+    
+  ### Impact des pressions anthropiques sur les régimes principaux
+    
