@@ -15,7 +15,7 @@ require(reshape) # pr fction melt, afin chgt format wide -> long
 require(reshape2)
 require(FactoMineR)
 require(gridExtra)
-require(gtable) # alternative pour arranger graphe ensembles
+require(gtable) # alternative pour arranger graphes ensembles
 require(missMDA)
 require(agricolae)
 
@@ -23,8 +23,15 @@ source("Scripts/functions.R")
 source("Scripts/data_cleaning.R")
     
 
+    ######################0000000000000########################   
+    
     
     #### SOMMAIRE ####
+    
+    
+    
+    ######################0000000000000########################
+    
     
 #o# scatterplot poids fonction taille + projection marginale des distributions
     
@@ -53,6 +60,8 @@ source("Scripts/data_cleaning.R")
     grid.arrange(plot_top, empty, scatter, plot_right, ncol = 2, nrow = 2, widths = c(4, 1), heights = c(1, 4))
   
 
+    ######################0000000000000########################
+    
 #o# Répartition des régimes au niveau des trois stations les plus étudiées (Crique Chien, Crique Nouvelle-france et 3 Sauts)    
     
   ### Repartition des regimes pr chaque groupe de stations pour BDD_PME generale
@@ -74,6 +83,8 @@ source("Scripts/data_cleaning.R")
     grid.arrange(p11, p22, ncol = 1, nrow = 2, widths = c(1, 1), heights = c(1, 1))
     
     
+    ######################0000000000000########################
+    
 #o# Répartition des régimes au niveau des trois stations les plus étudiées (Crique Chien, Crique Nouvelle-france et 3 Sauts)
     
   ### Repartition des regimes des échantillons ayant du Hg dosés dans les muscles sur chaque station de l'ensemble de la BDD
@@ -88,16 +99,18 @@ source("Scripts/data_cleaning.R")
     grid.arrange(p10, p20, ncol = 1, nrow = 2, widths = c(1, 1), heights = c(1, 1))    
     
     
+    ######################0000000000000########################
+    
 #o# Ensemble de la BDD
     
   ### Impact des pressions anthropiques
     
-    BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro, Regime_principal, Regime_alter) # Subset plus simple a  manipuler
+    BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro, Regime_principal, Regime_alter, Genre) # Subset plus simple a  manipuler
     
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD) # Il esxiste des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD) # Il existe des differences significatives
     
     comparison <- kruskal(BD$conc_Hg_muscle_ppm, BD$Pression_anthro, alpha = 0.05, p.adj = "holm")
     
@@ -107,7 +120,6 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      #scale_colour_brewer(palette="Set3") +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
       geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
@@ -129,6 +141,8 @@ source("Scripts/data_cleaning.R")
     print(p0)
     dev.off()
 
+    
+    #0000000000000#
   
   ### Impact des pressions anthropiques sur les régimes principaux
     
@@ -142,7 +156,7 @@ source("Scripts/data_cleaning.R")
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.carn, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.carn) # Il esxiste des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.carn) # Il existe des differences significatives
     
     comparison <- kruskal(BD.carn$conc_Hg_muscle_ppm, BD.carn$Pression_anthro, alpha = 0.05, p.adj = "holm")
     
@@ -152,7 +166,6 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD.carn, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      #scale_colour_brewer(palette="Set3") +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
       geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
@@ -180,7 +193,7 @@ source("Scripts/data_cleaning.R")
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.omni, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.omni) # Il esxiste des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.omni) # Il existe des differences significatives
     
     comparison <- kruskal(BD.omni$conc_Hg_muscle_ppm, BD.omni$Pression_anthro, alpha = 0.05, p.adj = "holm")
     
@@ -190,7 +203,6 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD.omni, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      #scale_colour_brewer(palette="Set3") +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
       geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
@@ -213,6 +225,8 @@ source("Scripts/data_cleaning.R")
     dev.off()
     
     
+    #0000000000000#
+    
   ### Impact des pressions anthropiques sur les régimes détaillés
     
         
@@ -227,7 +241,7 @@ source("Scripts/data_cleaning.R")
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.omn.inver, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.omn.inver) # Il esxiste des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.omn.inver) # Il existe des differences significatives
     
     comparison <- kruskal(BD.omn.inver$conc_Hg_muscle_ppm, BD.omn.inver$Pression_anthro, alpha = 0.05, p.adj = "holm")
     
@@ -237,7 +251,6 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD.omn.inver, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      #scale_colour_brewer(palette="Set3") +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
       geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
@@ -265,7 +278,7 @@ source("Scripts/data_cleaning.R")
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.car.inver, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.car.inver) # Il esxiste des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.car.inver) # Il existe des differences significatives
     
     comparison <- kruskal(BD.car.inver$conc_Hg_muscle_ppm, BD.car.inver$Pression_anthro, alpha = 0.05, p.adj = "holm")
     
@@ -275,7 +288,6 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD.car.inver, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      #scale_colour_brewer(palette="Set3") +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
       geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
@@ -302,7 +314,7 @@ source("Scripts/data_cleaning.R")
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.car.pisc, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.car.pisc) # Il esxiste des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.car.pisc) # Il existe des differences significatives
     
     comparison <- kruskal(BD.car.pisc$conc_Hg_muscle_ppm, BD.car.pisc$Pression_anthro, alpha = 0.05, p.adj = "holm")
     
@@ -312,7 +324,6 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD.car.pisc, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      #scale_colour_brewer(palette="Set3") +
       geom_hline(aes(yintercept = 2.5), color = "red") +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
@@ -336,42 +347,96 @@ source("Scripts/data_cleaning.R")
     dev.off()
     
 
+    #0000000000000#
+    
   ### Impact des pressions anthropiques chez Mohenkausia
     
     BD.moen <- BD[BD$Genre %in% "Moenkhausia",]
     
-    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.car.pisc, mean)
+    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD.moen, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.car.pisc) # Il esxiste des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD.moen) # Il existe des differences significatives
     
-    comparison <- kruskal(BD.car.pisc$conc_Hg_muscle_ppm, BD.car.pisc$Pression_anthro, alpha = 0.05, p.adj = "holm")
+    comparison <- kruskal(BD.moen$conc_Hg_muscle_ppm, BD.moen$Pression_anthro, alpha = 0.05, p.adj = "holm")
     
     posthoc <- comparison[['groups']]
     posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
     
     
-    p0 <- ggplot(BD.car.pisc, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+    p0 <- ggplot(BD.moen, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      #scale_colour_brewer(palette="Set3") +
       geom_hline(aes(yintercept = 2.5), color = "red") +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
       geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.15), color = "blue")
-    lettpos <- function(BD.car.pisc) boxplot(BD.car.pisc$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
-    test <- ddply(BD.car.pisc, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    lettpos <- function(BD.moen) boxplot(BD.moen$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
+    test <- ddply(BD.moen, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     p0 <- p0 + geom_text(aes(Pression_anthro, upper - 0.5, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
-      scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
-                       labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+      scale_x_discrete(limits = c( "Reference", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                       labels = c("Référence",  "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
-            x = "Pression anthropique", title = "[Hg] dans les muscles de Mohenkausia selon les pressions anthropiques exercées sur les stations")
+            x = "Pression anthropique", title = "[Hg] dans les muscles de Moenkhausia selon les pressions anthropiques exercées sur les stations")
     
     
-    
-    pdf("Graph/Hg-muscle_pression-anthropique_mohenkausia.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Hg-muscle_pression-anthropique_moenkhausia.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
+    
+    
+    #0000000000000#
+    
+    
+  ### Contamination en Hg selon régime alimentaire et d15N
+    
+    # [Hg] muscle
+    
+    pl1 <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
+      # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
+      geom_point(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = Regime_alter), hjust=1.02, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.reg.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
+      geom_errorbar(data = df.reg.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05)
+        
+    
+    # [Hg] foie
+    
+    pl2 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_foie_ppm)), ], aes(x = d15N, y = conc_Hg_foie_ppm)) +
+      # geom_point(aes(color = Regime_alter), alpha = 0.65) +
+      geom_point(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.reg.foie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
+      geom_errorbar(data = df.reg.foie, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05)
+        
+    
+    # [Hg] branchie
+    
+    pl3 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_branchie_ppm)), ], aes(x = d15N, y = conc_Hg_branchie_ppm)) +
+      #  geom_point(aes(color = Regime_alter), alpha = 0.65) +
+      geom_point(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.reg.branchie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
+      geom_errorbar(data = df.reg.branchie, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05)
+    
+    # Association des graphiques
+    
+    ggplot(df, aes(x = Regime_alter, y = value, color = variable)) + geom_point() # Muscle = organe le plus concentré sauf chez Carnivores indéfinis
+    
+    
+    legend <- g_legend(pl1)
+    
+    grid.arrange(pl1, pl2, pl3, ncol = 1, nrow = 3) # Basic
+    
+    grid.arrange(arrangeGrob(pl1 + theme(legend.position="none"),
+                             pl2 + theme(legend.position="none"),
+                             pl3 + theme(legend.position="none"),
+                             ncol = 1),
+                 legend, ncol = 2, nrow = 1, widths = c(9, 1), heights = c(1, 1))
+    
+ 
+    
+    

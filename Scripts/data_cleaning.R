@@ -103,3 +103,23 @@ BDD.sansNA <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ]
 BDD.sansNA$station <- droplevels(BDD.sansNA$station)
 
 BDD.sansNA$Pression_anthro <- droplevels(BDD.sansNA$Pression_anthro)
+
+
+######################0000000000000########################
+
+
+df.reg.org <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & !(is.na(BDD_PME$conc_Hg_branchie_ppm))
+                         & !(is.na(BDD_PME$conc_Hg_foie_ppm)), ] %.% # Selection BDD_PME
+  group_by(Regime_alter) %.% # Selection par régime
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+            d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C)), Hg_foie_mean = mean(na.omit(conc_Hg_foie_ppm)),
+            Hg_foie_se = se(na.omit(conc_Hg_foie_ppm)), Hg_branchie_mean = mean(na.omit(conc_Hg_branchie_ppm)), Hg_branchie_se = se(na.omit(conc_Hg_branchie_ppm))) # Sélection des données à calculer
+
+df.reg.org <- na.omit(df.reg.org)
+
+
+df.reg.org <- df.reg.org %.%
+  group_by(Regime_alter) %.%
+  mutate(muscle.foie = (Hg_muscle_mean / Hg_foie_mean), muscle.branchie = (Hg_muscle_mean / Hg_branchie_mean), branchie.foie = (Hg_branchie_mean / Hg_foie_mean))
+
+df <- melt(df.reg.org, id.vars = "Regime_alter", measure.vars = c("muscle.foie", "muscle.branchie", "branchie.foie"))
