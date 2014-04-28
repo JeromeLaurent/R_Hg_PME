@@ -45,7 +45,7 @@ BDD_PME$Regime_principal <- factor(BDD_PME$Regime_principal, levels = c( "Carniv
 ######################0000000000000########################
 
 ###
-# Subset de données à partir de la BDD_PME  ; uniquement les échantillons ayant des métaux dosés
+# Subset de données à partir de la BDD_PME  ; uniquement les échantillons ayant des éléments traces dosés
 ###
 
 sub_BDD_PME <- BDD_PME[!(is.na(BDD_PME$Cr_ppm)), ]
@@ -89,6 +89,8 @@ BDD$date <- as.factor(BDD$date)
 
 BDD$Regime_alter <- factor(BDD$Regime_alter, levels = c("Carnivore_Piscivore", "Carnivore_Insectivore", "Carnivore_Invertivore", "Carnivore_Scaliphage", "Carnivore_Charognard", "Carnivore", "Omnivore_Piscivore", "Omnivore_Invertivore", "Omnivore_Insectivore", "Omnivore_Periphytophage", "Omnivore_Herbivore", "Detritivore", "Herbivore_Periphytophage", "Herbivore","Herbivore_Phyllophage", "Inconnu")) 
 BDD$Regime_principal <- factor(BDD$Regime_principal, levels = c( "Carnivore", "Omnivore", "Detritivore", "Herbivore", "Inconnu"))
+BDD$Pression_anthro <- factor(BDD$Pression_anthro, levels = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_legal", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"))
+
 
 ######################0000000000000########################
 
@@ -99,3 +101,5 @@ BDD$Regime_principal <- factor(BDD$Regime_principal, levels = c( "Carnivore", "O
 BDD.sansNA <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ]
 
 BDD.sansNA$station <- droplevels(BDD.sansNA$station)
+
+BDD.sansNA$Pression_anthro <- droplevels(BDD.sansNA$Pression_anthro)
