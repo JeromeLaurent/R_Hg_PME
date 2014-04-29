@@ -107,10 +107,15 @@ BDD.sansNA$Pression_anthro <- droplevels(BDD.sansNA$Pression_anthro)
 
 ######################0000000000000########################
 
+#
+## Mise en forme données pour graphiques [hg] en fonction de d15N
+#
 
-df.reg.org <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & !(is.na(BDD_PME$conc_Hg_branchie_ppm))
-                         & !(is.na(BDD_PME$conc_Hg_foie_ppm)), ] %.% # Selection BDD_PME
-  group_by(Regime_alter) %.% # Selection par régime
+# Intégralité BDD
+
+df.reg.org <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)) & !(is.na(BDD$conc_Hg_branchie_ppm))
+                         & !(is.na(BDD$conc_Hg_foie_ppm)), ] %.% # Selection BDD globale
+  group_by(Regime_alter) %.% # Sélection par régime
   summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
             d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C)), Hg_foie_mean = mean(na.omit(conc_Hg_foie_ppm)),
             Hg_foie_se = se(na.omit(conc_Hg_foie_ppm)), Hg_branchie_mean = mean(na.omit(conc_Hg_branchie_ppm)), Hg_branchie_se = se(na.omit(conc_Hg_branchie_ppm))) # Sélection des données à calculer
@@ -118,8 +123,52 @@ df.reg.org <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15
 df.reg.org <- na.omit(df.reg.org)
 
 
+# Test ratio entre [] dans les divers organes
 df.reg.org <- df.reg.org %.%
   group_by(Regime_alter) %.%
   mutate(muscle.foie = (Hg_muscle_mean / Hg_foie_mean), muscle.branchie = (Hg_muscle_mean / Hg_branchie_mean), branchie.foie = (Hg_branchie_mean / Hg_foie_mean))
 
 df <- melt(df.reg.org, id.vars = "Regime_alter", measure.vars = c("muscle.foie", "muscle.branchie", "branchie.foie"))
+
+# Données uniquement de 3 Sauts, Crique Chien et Nouvelle France
+df.PME <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)), ] %.% # Selection BDD_PME
+  group_by(Regime_alter) %.% # Selection par régime
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+            d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+
+df.PME <- na.omit(df.PME)
+df.PME <- df.PME[- nrow(df.PME),] # Enlève la dernière ligne ("inconnu")
+
+# Données uniquement Crique Chien non contaminée
+df.chien.nonconta <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_non_conta", ] %.%
+  group_by(Regime_alter) %.% # Selection par régime
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+            d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+
+df.chien.nonconta <- na.omit(df.chien.nonconta)
+
+# Données uniquement Crique Chien contaminée
+df.chien.conta <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_conta", ] %.%
+  group_by(Regime_alter) %.% # Selection par régime
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+            d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+
+df.chien.conta <- na.omit(df.chien.conta)
+
+# Données uniquement Nouvelle France contaminée
+df.NF.conta <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "NF_conta", ] %.%
+  group_by(Regime_alter) %.% # Selection par régime
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+            d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+
+df.NF.conta <- na.omit(df.NF.conta)
+
+# Données uniquement Nouvelle France non contaminée
+df.NF.nonconta <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "NF_non_conta", ] %.%
+  group_by(Regime_alter) %.% # Selection par régime
+  summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+            d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+
+df.NF.nonconta <- na.omit(df.NF.nonconta)
+df.NF.nonconta <- df.NF.nonconta[- nrow(df.NF.nonconta),]
+

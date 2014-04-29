@@ -391,16 +391,16 @@ source("Scripts/data_cleaning.R")
     #0000000000000#
     
     
-  ### Contamination en Hg selon régime alimentaire et d15N
+  ### Contamination en Hg selon régime alimentaire et d15N sur toute la BDD
     
     # [Hg] muscle
     
-    pl1 <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
+    pl1 <- ggplot(BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
       # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
-      geom_point(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
-      geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
-      geom_errorbarh(data = df.reg.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
-      geom_errorbar(data = df.reg.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
+      geom_point(data = df.reg.org, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.reg.org, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.reg.org, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
+      geom_errorbar(data = df.reg.org, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
       scale_color_discrete(name = "Régime trophique",
                        labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
       ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
@@ -413,12 +413,12 @@ source("Scripts/data_cleaning.R")
     
     # [Hg] foie
     
-    pl2 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_foie_ppm)), ], aes(x = d15N, y = conc_Hg_foie_ppm)) +
+    pl2 <- ggplot( BDD[!(is.na(BDD$conc_Hg_foie_ppm)), ], aes(x = d15N, y = conc_Hg_foie_ppm)) +
       # geom_point(aes(color = Regime_alter), alpha = 0.65) +
-      geom_point(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter), size = 4) +
-      geom_text(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
-      geom_errorbarh(data = df.reg.foie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
-      geom_errorbar(data = df.reg.foie, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05) +
+      geom_point(data = df.reg.org, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.reg.org, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.reg.org, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
+      geom_errorbar(data = df.reg.org, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05) +
       scale_color_discrete(name = "Régime trophique",
                            labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
       ylab("[Hg] dans le foie de poissons, en mg/kg de poids sec") +
@@ -431,12 +431,12 @@ source("Scripts/data_cleaning.R")
     
     # [Hg] branchie
     
-    pl3 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_branchie_ppm)), ], aes(x = d15N, y = conc_Hg_branchie_ppm)) +
+    pl3 <- ggplot( BDD[!(is.na(BDD$conc_Hg_branchie_ppm)), ], aes(x = d15N, y = conc_Hg_branchie_ppm)) +
       #  geom_point(aes(color = Regime_alter), alpha = 0.65) +
-      geom_point(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter), size = 4) +
-      geom_text(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
-      geom_errorbarh(data = df.reg.branchie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
-      geom_errorbar(data = df.reg.branchie, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05) +
+      geom_point(data = df.reg.org, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.reg.org, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.reg.org, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
+      geom_errorbar(data = df.reg.org, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05) +
       scale_color_discrete(name = "Régime trophique",
                            labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
       ylab("[Hg] dans les branchies de poissons, en mg/kg de poids sec") +
@@ -475,4 +475,93 @@ source("Scripts/data_cleaning.R")
     dev.off()
     
     
+    #0000000000000#
     
+    ### Contamination en Hg selon régime alimentaire et d15N sur Chien, 3 sauts et Nouvelle France
+    
+    
+     # 3 Sauts : pas d'isotopie réalisée ; pas de graphique
+    
+    
+     # Crique Chien
+    
+    
+      ## Non contaminée
+    
+    pCnC <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
+      # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
+      geom_point(data = df.chien.nonconta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.chien.nonconta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Charognard", "Omnivore Invertivore", "Détritivore", "Périphytophage")), hjust= 0, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.chien.nonconta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
+      geom_errorbar(data = df.chien.nonconta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
+      scale_color_discrete(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore Charognard", "Omnivore Invertivore", "Détritivore", "Herbivore Périphytophage")) +
+      ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
+      xlab(expression(paste(delta^{15},'N'))) +
+      ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone non contaminée de Crique Chien en fonction de ", delta^{15},"N selon les régimes trophiques")))
+    
+    pdf("Graph/Hg-muscle_d15N_regime_Chien-nonconta.pdf", width = 16.5, height = 9)
+    print(pCnC)    
+    dev.off()
+    
+      ## Contaminée
+    
+    pCC <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
+      # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
+      geom_point(data = df.chien.conta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.chien.conta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage")), hjust=1.02, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.chien.conta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
+      geom_errorbar(data = df.chien.conta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
+      scale_color_discrete(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage")) +
+      ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
+      xlab(expression(paste(delta^{15},'N'))) +
+      ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone contaminée de Crique Chien en fonction de ", delta^{15},"N selon les régimes trophiques")))
+    
+    pdf("Graph/Hg-muscle_d15N_regime_Chien-conta.pdf", width = 13, height = 9)
+    print(pCC)    
+    dev.off()
+    
+    # Crique Nouvelle France
+    
+    
+      ## Non Contaminée
+    
+    pNFnC <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
+      # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
+      geom_point(data = df.NF.nonconta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.NF.nonconta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Scaliphage", "Charognard", "Omnivore Invertivore",  "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.NF.nonconta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
+      geom_errorbar(data = df.NF.nonconta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
+      scale_color_discrete(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore Scaliphage", "Carnivore Charognard", "Omnivore Invertivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
+      xlab(expression(paste(delta^{15},'N'))) +
+      ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone non contaminée de Crique Nouvelle France en fonction de ", delta^{15},"N selon les régimes trophiques")))
+    
+    pdf("Graph/Hg-muscle_d15N_regime_NF-nonconta.pdf", width = 14, height = 9)
+    print(pNFnC)    
+    dev.off()
+    
+      ## Contaminée
+    
+    
+    pNFC <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
+      # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
+      geom_point(data = df.NF.conta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+      geom_text(data = df.NF.conta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Carnivore Invertivore", "Omnivore Invertivore", "Périphytophage")), hjust= 0, vjust=-1, size = 6.5) +
+      geom_errorbarh(data = df.NF.conta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
+      geom_errorbar(data = df.NF.conta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
+      scale_color_discrete(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore Invertivore", "Herbivore Périphytophage")) +
+      ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
+      xlab(expression(paste(delta^{15},'N'))) +
+      ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone contaminée de Crique Nouvelle France en fonction de ", delta^{15},"N selon les régimes trophiques")))
+    
+    pdf("Graph/Hg-muscle_d15N_regime_NF-conta.pdf", width = 13.8, height = 9)
+    print(pNFC)    
+    dev.off()
+    
+    
+    ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)),], aes(x = Regime_alter, y = conc_Hg_muscle_ppm)) +
+      geom_point(position="jitter")
