@@ -398,29 +398,57 @@ source("Scripts/data_cleaning.R")
     pl1 <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
       # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
       geom_point(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
-      geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = Regime_alter), hjust=1.02, vjust=-1, size = 6.5) +
+      geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.reg.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
-      geom_errorbar(data = df.reg.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05)
-        
+      geom_errorbar(data = df.reg.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
+      scale_color_discrete(name = "Régime trophique",
+                       labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
+      xlab(expression(paste(delta^{15},'N'))) +
+      ggtitle(expression(paste("[Hg] dans le muscle de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
+    
+    pdf("Graph/Hg-muscle_d15N_regime.pdf", width = 12, height = 9)
+    print(pl1)    
+    dev.off()
     
     # [Hg] foie
     
     pl2 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_foie_ppm)), ], aes(x = d15N, y = conc_Hg_foie_ppm)) +
       # geom_point(aes(color = Regime_alter), alpha = 0.65) +
       geom_point(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter), size = 4) +
-      geom_text(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
+      geom_text(data = df.reg.foie, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.reg.foie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
-      geom_errorbar(data = df.reg.foie, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05)
-        
+      geom_errorbar(data = df.reg.foie, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05) +
+      scale_color_discrete(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      ylab("[Hg] dans le foie de poissons, en mg/kg de poids sec") +
+      xlab(expression(paste(delta^{15},'N'))) +
+      ggtitle(expression(paste("[Hg] dans le foie de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
+    
+    pdf("Graph/Hg-foie_d15N_regime.pdf", width = 12, height = 9)
+    print(pl2)    
+    dev.off()  
     
     # [Hg] branchie
     
     pl3 <- ggplot( BDD_PME[!(is.na(BDD_PME$conc_Hg_branchie_ppm)), ], aes(x = d15N, y = conc_Hg_branchie_ppm)) +
       #  geom_point(aes(color = Regime_alter), alpha = 0.65) +
       geom_point(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter), size = 4) +
-      geom_text(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = Regime_alter), hjust=1, vjust=-1, size = 6.5) +
+      geom_text(data = df.reg.branchie, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.reg.branchie, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
-      geom_errorbar(data = df.reg.branchie, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05)
+      geom_errorbar(data = df.reg.branchie, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05) +
+      scale_color_discrete(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      ylab("[Hg] dans les branchies de poissons, en mg/kg de poids sec") +
+      xlab(expression(paste(delta^{15},'N'))) +
+      ggtitle(expression(paste("[Hg] dans les branchies de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
+   
+    
+    pdf("Graph/Hg-branchies_d15N_regime.pdf", width = 12, height = 9)
+    print(pl3)    
+    dev.off()
+    
+    
     
     # Association des graphiques
     
@@ -438,5 +466,13 @@ source("Scripts/data_cleaning.R")
                  legend, ncol = 2, nrow = 1, widths = c(9, 1), heights = c(1, 1))
     
  
+    pdf("Graph/Hg-d15N_regime.pdf", width = 20, height = 15) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(grid.arrange(arrangeGrob(pl1 + theme(legend.position="none"),
+                                   pl2 + theme(legend.position="none"),
+                                   pl3 + theme(legend.position="none"),
+                                   ncol = 1),
+                       legend, ncol = 2, nrow = 1, widths = c(9, 1), heights = c(1, 1)))
+    dev.off()
+    
     
     

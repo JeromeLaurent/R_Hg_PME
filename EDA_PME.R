@@ -1901,3 +1901,12 @@ fit <- pvclust(mydata, method.hclust="ward",
 plot(fit) # dendogram with p values
 # add rectangles around groups highly supported by the data
 pvrect(fit, alpha=.95) 
+
+
+
+######## Test couleurs
+
+scales::hue_pal()(14) # code des couleurs utilisées de base par ggplot
+# "#F8766D" "#D89000" "#A3A500" "#39B600" "#00BF7D" "#00BFC4" "#00B0F6" "#9590FF" "#E76BF3" "#FF62BC"
+# Alternative pour projections, couleurs plus saturées
+# #a6cee3 #1f78b4 #b2df8a #33a02c #fb9a99 #e31a1c #fdbf6f #ff7f00 #cab2d6 #6a3d9a
