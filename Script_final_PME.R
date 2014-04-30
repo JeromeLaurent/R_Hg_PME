@@ -18,6 +18,7 @@ require(gridExtra)
 require(gtable) # alternative pour arranger graphes ensembles
 require(missMDA)
 require(agricolae)
+require(xtable)
 
 source("Scripts/functions.R")
 source("Scripts/data_cleaning.R")
@@ -504,6 +505,8 @@ source("Scripts/data_cleaning.R")
     print(pCnC)    
     dev.off()
     
+    # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_non_conta", ]$Regime_alter),decreasing=TRUE)
+    
       ## Contaminée
     
     pCC <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
@@ -521,6 +524,9 @@ source("Scripts/data_cleaning.R")
     pdf("Graph/Hg-muscle_d15N_regime_Chien-conta.pdf", width = 13, height = 9)
     print(pCC)    
     dev.off()
+    
+   # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_conta", ]$Regime_alter),decreasing=TRUE)
+    
     
     # Crique Nouvelle France
     
@@ -543,6 +549,9 @@ source("Scripts/data_cleaning.R")
     print(pNFnC)    
     dev.off()
     
+    # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "NF_non_conta", ]$Regime_alter),decreasing=TRUE)
+    
+    
       ## Contaminée
     
     
@@ -562,6 +571,12 @@ source("Scripts/data_cleaning.R")
     print(pNFC)    
     dev.off()
     
+    # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "NF_conta", ]$Regime_alter),decreasing=TRUE)
     
+    # Informations sur le nombre d'individus dans chaque condition
     ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)),], aes(x = Regime_alter, y = conc_Hg_muscle_ppm)) +
-      geom_point(position="jitter")
+      geom_point(position="jitter") + facet_wrap(~ Groupe_station)
+    
+    View(ftable(xtabs(~ Groupe_station + Regime_alter, data = BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)),])))
+
+    ftable(xtabs(~ Groupe_station + Regime_principal, data = BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)),]))

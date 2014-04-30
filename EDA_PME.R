@@ -1837,7 +1837,10 @@ ggplot(BDD_PME, aes(y = conc_Hg_muscle_ppm, x = 1)) +
 # Plus de 2 variables donc plutôt ACM.
 
 # Il faut convertir les variables quantitatives en qualitatives. Pour cela, utiliser la fonction cut()
+# http://gastonsanchez.com/blog/how-to/2012/10/13/MCA-in-R.html
 
+
+# Se
 Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Se_ppm)
 
 Bd$Se_qual <- cut(Bd$Se_ppm, 5)
@@ -1847,19 +1850,19 @@ require(gtools)
 Bd$Se_qual2 <- quantcut(Bd$Se_ppm, q = seq(0, 1, by = 0.2))
 Bd$Se_qual2
 Bd2 <- Bd[,- 3]
-Bd2$Se_qual <- as.numeric(Bd2$Se_qual)
-Bd2$Se_qual2 <- as.numeric(Bd2$Se_qual2)
+Bd2$Se_qual <- as.factor(Bd2$Se_qual)
+Bd2$Se_qual2 <- as.factor(Bd2$Se_qual2)
 Bd_quint <- Bd2 [, - 3]
 Bd_cut <- Bd2 [, - 4]
 
-cats = apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+cats <- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
 
-mca1 = MCA(Bd2)
+mca1 <- MCA(Bd2)
 
-mca1_vars_df = data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
 
 # data frame with observation coordinates
-mca1_obs_df = data.frame(mca1$ind$coord)
+mca1_obs_df <- data.frame(mca1$ind$coord)
 
 # plot of variable categories
 ggplot(data=mca1_vars_df, 
@@ -1880,6 +1883,54 @@ ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
                 label = rownames(mca1_vars_df), colour = Variable)) +
   ggtitle("MCA plot of variables using R package FactoMineR") +
   scale_colour_discrete(name = "Variable")
+
+# Hg
+Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Hg_ppm)
+Bd <- Bd[!(is.na(Bd$Hg_ppm)),]
+
+Bd$Hg_qual <- cut(Bd$Hg_ppm, 5)
+
+require(gtools)
+
+Bd$Hg_qual2 <- quantcut(Bd$Hg_ppm, q = seq(0, 1, by = 0.2))
+Bd$Hg_qual2
+Bd2 <- Bd[,- 3]
+Bd2$Hg_qual <- as.factor(Bd2$Hg_qual)
+Bd2$Hg_qual2 <- as.factor(Bd2$Hg_qual2)
+Bd_quint <- Bd2 [, - 3]
+Bd_quint$Hg_qual2 <- as.factor(Bd_quint$Hg_qual2)
+
+cats <- apply(Bd_quint, 2, function(x) nlevels(as.factor(x)))
+
+mca2 <- MCA(Bd_quint)
+
+mca2_vars_df <- data.frame(mca2$var$coord, Variable = rep(names(cats), cats))
+
+# data frame with observation coordinates
+mca2_obs_df <- data.frame(mca2$ind$coord)
+
+# plot of variable categories
+ggplot(data=mca2_vars_df, 
+       aes(x = Dim.1, y = Dim.2, label = rownames(mca2_vars_df))) +
+  geom_hline(yintercept = 0, colour = "gray70") +
+  geom_vline(xintercept = 0, colour = "gray70") +
+  geom_text(aes(colour=Variable)) +
+  ggtitle("MCA plot of variables using R package FactoMineR")
+
+# MCA plot of observations and categories
+ggplot(data = mca2_obs_df, aes(x = Dim.1, y = Dim.2)) +
+  geom_hline(yintercept = 0, colour = "gray70") +
+  geom_vline(xintercept = 0, colour = "gray70") +
+  geom_point(colour = "gray50", alpha = 0.7) +
+  geom_density2d(colour = "gray80") +
+  geom_text(data = mca2_vars_df, 
+            aes(x = Dim.1, y = Dim.2, 
+                label = rownames(mca2_vars_df), colour = Variable)) +
+  ggtitle("MCA plot of variables using R package FactoMineR") +
+  scale_colour_discrete(name = "Variable")
+
+
+
 
 
 # Ward Hierarchical Clustering
@@ -1910,3 +1961,16 @@ scales::hue_pal()(14) # code des couleurs utilisées de base par ggplot
 # "#F8766D" "#D89000" "#A3A500" "#39B600" "#00BF7D" "#00BFC4" "#00B0F6" "#9590FF" "#E76BF3" "#FF62BC"
 # Alternative pour projections, couleurs plus saturées
 # #a6cee3 #1f78b4 #b2df8a #33a02c #fb9a99 #e31a1c #fdbf6f #ff7f00 #cab2d6 #6a3d9a
+
+# http://stackoverflow.com/questions/19068432/ggplot2-how-to-use-same-colors-in-different-plots-for-same-factor?rq=1
+
+# Graphical Data overview :
+#http://stats.stackexchange.com/questions/4089/graphical-data-overview-summary-function-in-r
+
+
+library(PerformanceAnalytics)
+chart.Correlation(iris[,1:4],col=iris$Species)
+
+# ?scatterplot.matrix() from car package
+
+library(fitdistrplus)
