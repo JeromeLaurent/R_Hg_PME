@@ -156,3 +156,48 @@ panel.shadeNtext <- function (x, y, corr = NULL, col.regions, ...)
 # Call the corrgram function with the new panel functions
 # NB: call on the data, not the correlation matrix
 #corrgram(BDD, type="data", lower.panel=panel.shadeNtext,  upper.panel=NULL)
+
+
+######################0000000000000########################
+
+#  /\
+# /||\
+#/ °° \
+#------
+
+# Ne fonctionne pas pour l'instant, à modifier
+
+elt.trace <- function(elt_ppm, elt){
+Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, elt_ppm)
+
+Bd$elt_qual <- cut(Bd$elt_ppm, 5)
+
+Bd$elt_qual2 <- quantcut(Bd$elt_ppm, q = seq(0, 1, by = 0.2))
+Bd$elt_qual2
+Bd2 <- Bd[,- 3]
+Bd2$elt_qual <- as.factor(Bd2$elt_qual)
+Bd2$elt_qual2 <- as.factor(Bd2$elt_qual2)
+Bd_quint <- Bd2 [, - 3]
+Bd_cut <- Bd2 [, - 4]
+
+cats <- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+
+mca1 <- MCA(Bd2)
+
+mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+
+# data frame with observation coordinates
+mca1_obs_df <- data.frame(mca1$ind$coord)
+
+# MCA plot of observations and categories
+ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
+  geom_hline(yintercept = 0, colour = "gray70") +
+  geom_vline(xintercept = 0, colour = "gray70") +
+  geom_point(colour = "gray50", alpha = 0.7) +
+  geom_density2d(colour = "gray80") +
+  geom_text(data = mca1_vars_df, 
+            aes(x = Dim.1, y = Dim.2, 
+                label = rownames(mca1_vars_df), colour = Variable)) +
+  ggtitle("MCA plot of variables : elt") +
+  scale_colour_discrete(name = "Variable")
+}
