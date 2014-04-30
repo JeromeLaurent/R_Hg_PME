@@ -389,7 +389,7 @@ source("Scripts/data_cleaning.R")
     dev.off()
     
     
-    #0000000000000#
+    ######################0000000000000########################
     
     
   ### Contamination en Hg selon régime alimentaire et d15N sur toute la BDD
@@ -580,3 +580,30 @@ source("Scripts/data_cleaning.R")
     View(ftable(xtabs(~ Groupe_station + Regime_alter, data = BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)),])))
 
     ftable(xtabs(~ Groupe_station + Regime_principal, data = BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)),]))
+
+    
+    ######################0000000000000########################
+    
+    
+    # Analyse des éléments traces : Camopi, Nouvelle france et 3 Sauts
+    
+    
+    # sub_BDD_PME
+    
+    
+    ## Se
+    
+    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Se_ppm, color = Regime_principal)) +
+      geom_boxplot() +
+      scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+                       labels = c("Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique",
+                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+      ylab("[Se] dans le muscle de poissons, en mg/kg de poids sec") +
+      xlab("Groupe de stations") +
+      ggtitle(expression(paste("[Se] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
+    
+    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Se_ppm, color = Regime_alter)) +
+      geom_boxplot()
+    
