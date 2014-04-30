@@ -138,7 +138,7 @@ source("Scripts/data_cleaning.R")
       geom_hline(aes(yintercept = 2.5), color = "red")
     
     
-    pdf("Graph/Hg-muscle_pression-anthropique.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
 
@@ -184,7 +184,7 @@ source("Scripts/data_cleaning.R")
       geom_hline(aes(yintercept = 2.5), color = "red")
     
     
-    pdf("Graph/Hg-muscle_pression-anthropique_carnivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -221,7 +221,7 @@ source("Scripts/data_cleaning.R")
       geom_hline(aes(yintercept = 2.5), color = "red")
     
     
-    pdf("Graph/Hg-muscle_pression-anthropique_omnivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -269,7 +269,7 @@ source("Scripts/data_cleaning.R")
       geom_hline(aes(yintercept = 2.5), color = "red")
     
     
-    pdf("Graph/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -306,7 +306,7 @@ source("Scripts/data_cleaning.R")
       geom_hline(aes(yintercept = 2.5), color = "red")
     
     
-    pdf("Graph/Hg-muscle_pression-anthropique_carnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -343,7 +343,7 @@ source("Scripts/data_cleaning.R")
       
     
     
-    pdf("Graph/Hg-muscle_pression-anthropique_carnivores-piscivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-piscivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -384,7 +384,7 @@ source("Scripts/data_cleaning.R")
             x = "Pression anthropique", title = "[Hg] dans les muscles de Moenkhausia selon les pressions anthropiques exercées sur les stations")
     
     
-    pdf("Graph/Hg-muscle_pression-anthropique_moenkhausia.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_moenkhausia.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -408,7 +408,7 @@ source("Scripts/data_cleaning.R")
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
     
-    pdf("Graph/Hg-muscle_d15N_regime.pdf", width = 12, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-muscle_d15N_regime.pdf", width = 12, height = 9)
     print(pl1)    
     dev.off()
     
@@ -426,7 +426,7 @@ source("Scripts/data_cleaning.R")
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le foie de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
     
-    pdf("Graph/Hg-foie_d15N_regime.pdf", width = 12, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-foie_d15N_regime.pdf", width = 12, height = 9)
     print(pl2)    
     dev.off()  
     
@@ -445,7 +445,7 @@ source("Scripts/data_cleaning.R")
       ggtitle(expression(paste("[Hg] dans les branchies de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
    
     
-    pdf("Graph/Hg-branchies_d15N_regime.pdf", width = 12, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-branchies_d15N_regime.pdf", width = 12, height = 9)
     print(pl3)    
     dev.off()
     
@@ -467,7 +467,7 @@ source("Scripts/data_cleaning.R")
                  legend, ncol = 2, nrow = 1, widths = c(9, 1), heights = c(1, 1))
     
  
-    pdf("Graph/Hg-d15N_regime.pdf", width = 20, height = 15) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Hg_isotopie/Hg-d15N_regime.pdf", width = 20, height = 15) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(grid.arrange(arrangeGrob(pl1 + theme(legend.position="none"),
                                    pl2 + theme(legend.position="none"),
                                    pl3 + theme(legend.position="none"),
@@ -501,7 +501,7 @@ source("Scripts/data_cleaning.R")
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone non contaminée de Crique Chien en fonction de ", delta^{15},"N selon les régimes trophiques")))
     
-    pdf("Graph/Hg-muscle_d15N_regime_Chien-nonconta.pdf", width = 16.5, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-muscle_d15N_regime_Chien-nonconta.pdf", width = 16.5, height = 9)
     print(pCnC)    
     dev.off()
     
@@ -521,7 +521,7 @@ source("Scripts/data_cleaning.R")
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone contaminée de Crique Chien en fonction de ", delta^{15},"N selon les régimes trophiques")))
     
-    pdf("Graph/Hg-muscle_d15N_regime_Chien-conta.pdf", width = 13, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-muscle_d15N_regime_Chien-conta.pdf", width = 13, height = 9)
     print(pCC)    
     dev.off()
     
@@ -545,7 +545,7 @@ source("Scripts/data_cleaning.R")
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone non contaminée de Crique Nouvelle France en fonction de ", delta^{15},"N selon les régimes trophiques")))
     
-    pdf("Graph/Hg-muscle_d15N_regime_NF-nonconta.pdf", width = 14, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-muscle_d15N_regime_NF-nonconta.pdf", width = 14, height = 9)
     print(pNFnC)    
     dev.off()
     
@@ -567,7 +567,7 @@ source("Scripts/data_cleaning.R")
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone contaminée de Crique Nouvelle France en fonction de ", delta^{15},"N selon les régimes trophiques")))
     
-    pdf("Graph/Hg-muscle_d15N_regime_NF-conta.pdf", width = 13.8, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-muscle_d15N_regime_NF-conta.pdf", width = 13.8, height = 9)
     print(pNFC)    
     dev.off()
     
