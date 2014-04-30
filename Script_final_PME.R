@@ -15,10 +15,11 @@ require(reshape) # pr fction melt, afin chgt format wide -> long
 require(reshape2)
 require(FactoMineR)
 require(gridExtra)
-require(gtable) # alternative pour arranger graphes ensembles
+# require(gtable) # alternative pour arranger graphes ensembles
 require(missMDA)
 require(agricolae)
-require(xtable)
+# require(xtable)
+require(gtools)
 
 source("Scripts/functions.R")
 source("Scripts/data_cleaning.R")
@@ -507,6 +508,8 @@ source("Scripts/data_cleaning.R")
     
     # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_non_conta", ]$Regime_alter),decreasing=TRUE)
     
+    
+    
       ## Contaminée
     
     pCC <- ggplot(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
@@ -527,6 +530,7 @@ source("Scripts/data_cleaning.R")
     
    # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_conta", ]$Regime_alter),decreasing=TRUE)
     
+    #0000000000000#
     
     # Crique Nouvelle France
     
@@ -550,6 +554,7 @@ source("Scripts/data_cleaning.R")
     dev.off()
     
     # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "NF_non_conta", ]$Regime_alter),decreasing=TRUE)
+    
     
     
       ## Contaminée
@@ -591,9 +596,34 @@ source("Scripts/data_cleaning.R")
     # sub_BDD_PME
     
     
+    ### ACP
+    # As enlevé car il y a définitivement un problème avec les [c] initiales
+    # Ensuite, problème avec Se car aucun échantillon de Trois Sauts n'a de valeur
+    
+    df.trace.Se <- sub_BDD_PME[,c(53:57, 59:62)]
+    df.trace.sansSe <- sub_BDD_PME[,c(53:57, 60:62)]
+    
+    # en cas d'imputation, le Se se détache clairement. Mais vu qu'une hypothèse
+    # Aurait pu être un lien entre Se et Hg et que l'imputation ne peut pas en tenir compte, est ce vraiment pertinent de la réaliser ?
+    res.pca <- PCA(df.trace.sansSe, scale.unit=TRUE)
+    nb <- estim_ncpPCA(df.trace.sansSe, ncp.min = 0, ncp.max = 5)
+    res.impute <- imputePCA(df.trace.sansSe, ncp = 2)
+    res.acp <- PCA (res.impute$completeObs)
+    
+    
+    # res.MI <- MIPCA(df.elt.trace, scale = TRUE, ncp = 2)
+    # plot(res.MI) # problème de mémoire ?
+    
+    
+    df <- sub_BDD_PME[,c(53:57, 59:62)]
+    df.sans3sauts <- df[!(is.na(df$Se)),]
+    res.acp <- PCA(df.sans3sauts)
+    
+    #0000000000000#
+    
     ## Se
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Se_ppm, color = Regime_principal)) +
+    Se <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Se_ppm, color = Regime_principal)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -609,7 +639,7 @@ source("Scripts/data_cleaning.R")
     
     ## Ni
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Ni_ppm, color = Regime_principal)) +
+    Ni <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Ni_ppm, color = Regime_principal)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -623,9 +653,44 @@ source("Scripts/data_cleaning.R")
     ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Ni_ppm, color = Regime_alter)) +
       geom_boxplot()
     
+      ### MCA sur Ni
+         
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Ni_ppm)
+    
+    Bd$Ni_qual <- cut(Bd$Ni_ppm, 5)
+    
+    Bd$Ni_qual2 <- quantcut(Bd$Ni_ppm, q = seq(0, 1, by = 0.2))
+    Bd2 <- Bd[,- 3]
+    Bd2$Ni_qual <- as.factor(Bd2$Ni_qual)
+    Bd2$Ni_qual2 <- as.factor(Bd2$Ni_qual2)
+    Bd_quint <- Bd2 [, - 3]
+    Bd_cut <- Bd2 [, - 4]
+    
+    cats <- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+    
+    mca1 <- MCA(Bd2)
+    
+    mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+    
+    # data frame with observation coordinates
+    mca1_obs_df <- data.frame(mca1$ind$coord)
+    
+    # MCA plot of observations and categories
+    ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
+      geom_hline(yintercept = 0, colour = "gray70") +
+      geom_vline(xintercept = 0, colour = "gray70") +
+      geom_point(colour = "gray50", alpha = 0.7) +
+      geom_density2d(colour = "gray80") +
+      geom_text(data = mca1_vars_df, 
+                aes(x = Dim.1, y = Dim.2, 
+                    label = rownames(mca1_vars_df), colour = Variable)) +
+      ggtitle("MCA plot of variables : Ni") +
+      scale_colour_discrete(name = "Variable")
+    
+    
     ## Cu
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cu_ppm, color = Regime_principal)) +
+    Cu <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cu_ppm, color = Regime_principal)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -644,7 +709,7 @@ source("Scripts/data_cleaning.R")
     
     ## Zn
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Zn_ppm, color = Regime_principal)) +
+    Zn <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Zn_ppm, color = Regime_principal)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -662,7 +727,7 @@ source("Scripts/data_cleaning.R")
     
     ## As
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = As_ppm, color = Regime_principal)) +
+    As <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = As_ppm, color = Regime_principal)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -680,7 +745,7 @@ source("Scripts/data_cleaning.R")
     
     ## Co
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Co_ppm, color = Regime_principal)) +
+    Co <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Co_ppm, color = Regime_principal)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -697,7 +762,7 @@ source("Scripts/data_cleaning.R")
     
     ## Cd
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cd_ppm, color = Regime_principal)) +
+    Cd <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cd_ppm, color = Regime_principal)) +
       geom_boxplot() + geom_hline(aes(yintercept = 0.5)) +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -714,7 +779,7 @@ source("Scripts/data_cleaning.R")
     
     ## Pb
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Pb_ppm, color = Regime_principal)) +
+    Pb <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Pb_ppm, color = Regime_principal)) +
       geom_boxplot() + geom_hline(aes(yintercept = 1.5)) +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -732,7 +797,7 @@ source("Scripts/data_cleaning.R")
     ## Cr
     
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cr_ppm, color = Regime_principal)) +
+    Cr <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cr_ppm, color = Regime_principal)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
