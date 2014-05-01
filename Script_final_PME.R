@@ -24,6 +24,11 @@ require(gtools)
 source("Scripts/functions.R")
 source("Scripts/data_cleaning.R")
     
+    
+    
+    # Reprendre le script et remplacer dat$ind par dat[,'ind']
+    
+    
 
     ######################0000000000000########################   
     
@@ -605,19 +610,39 @@ source("Scripts/data_cleaning.R")
     
     # en cas d'imputation, le Se se détache clairement. Mais vu qu'une hypothèse
     # Aurait pu être un lien entre Se et Hg et que l'imputation ne peut pas en tenir compte, est ce vraiment pertinent de la réaliser ?
+    # Toutes données sans Se
     res.pca <- PCA(df.trace.sansSe, scale.unit=TRUE)
     nb <- estim_ncpPCA(df.trace.sansSe, ncp.min = 0, ncp.max = 5)
     res.impute <- imputePCA(df.trace.sansSe, ncp = 2)
     res.acp <- PCA (res.impute$completeObs)
     
+       ## Matrice corrélation de l'ACP
+    
+    mcor <- cor(res.impute$completeObs)
+    res1 <- cor.mtest(res.impute$completeObs, 0.95)
+    
+    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05)
+    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05, insig = "pch", method="shade", shade.col=NA, tl.col="black", tl.srt=45,  addCoef.col="black", addcolorlabel="no", order="FPC")
+    
+    
     
     # res.MI <- MIPCA(df.elt.trace, scale = TRUE, ncp = 2)
     # plot(res.MI) # problème de mémoire ?
     
-    
+    # Données sans 3 Sauts mais avec Se
     df <- sub_BDD_PME[,c(53:57, 59:62)]
-    df.sans3sauts <- df[!(is.na(df$Se)),]
+    df.sans3sauts <- df[!(is.na(df[,'Se_ppm'])),]
+    res.impute <- imputePCA(df.sans3sauts, ncp = 2)
     res.acp <- PCA(df.sans3sauts)
+    
+        ## Matrice corrélation de l'ACP
+    
+    mcor <- cor(res.impute$completeObs)
+    res1 <- cor.mtest(res.impute$completeObs, 0.95)
+    
+    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05)
+    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05, insig = "pch", method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no", order="FPC")
+    
     
     #0000000000000#
     
