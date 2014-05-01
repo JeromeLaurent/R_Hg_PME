@@ -691,9 +691,9 @@ source("Scripts/data_cleaning.R")
     Bd_quint <- Bd2 [, - 3]
     Bd_cut <- Bd2 [, - 4]
     
-    cats <- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+    cats <- apply(Bd_quint, 2, function(x) nlevels(as.factor(x)))
     
-    mca1 <- MCA(Bd2)
+    mca1 <- MCA(Bd_quint)
     
     mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
     
@@ -729,6 +729,14 @@ source("Scripts/data_cleaning.R")
     
     ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cu_ppm, color = Regime_alter)) +
       geom_boxplot()
+ 
+    
+      ## MCA
+    
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Cu_ppm)
+        
+    elt.trace('Cu_ppm') + ggtitle("MCA plot of Cu")
     
     
     
@@ -750,6 +758,15 @@ source("Scripts/data_cleaning.R")
       geom_boxplot()
     
     
+       ## MCA
+    
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Zn_ppm)
+    
+    elt.trace('Zn_ppm') + ggtitle("MCA plot of Zn")
+    
+    
+     
     ## As
     
     As <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = As_ppm, color = Regime_principal)) +
@@ -785,6 +802,15 @@ source("Scripts/data_cleaning.R")
       geom_boxplot()
     
     
+       ## MCA
+    
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Co_ppm)
+    
+    elt.trace('Co_ppm') + ggtitle("MCA plot of Co")
+    
+    
+    
     ## Cd
     
     Cd <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cd_ppm, color = Regime_principal)) +
@@ -800,6 +826,15 @@ source("Scripts/data_cleaning.R")
     
     ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cd_ppm, color = Regime_alter)) +
       geom_boxplot() + geom_hline(aes(yintercept = 0.5))
+    
+    
+       ## MCA
+    
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Cd_ppm)
+    
+    elt.trace('Cd_ppm') + ggtitle("MCA plot of Cd")    
+    
     
     
     ## Pb
@@ -819,6 +854,15 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() + geom_hline(aes(yintercept = 2.5))
     
     
+       ## MCA
+    
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Pb_ppm)
+    
+    elt.trace('Pb_ppm') + ggtitle("MCA plot of Pb")
+    
+    
+    
     ## Cr
     
     
@@ -835,4 +879,14 @@ source("Scripts/data_cleaning.R")
     
     ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cr_ppm, color = Regime_alter)) +
       geom_boxplot()
+    
+    
+        ## MCA
+    
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Cr_ppm)
+    
+    elt.trace('Cr_ppm') + ggtitle("MCA plot of Cr")
+    
+    
     
