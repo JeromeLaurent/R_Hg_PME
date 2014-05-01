@@ -3,6 +3,11 @@
 ##############################################
 
 
+## IMPORTANT
+
+## assigner un objet avec <<- permet de le créer en dehors de la fonction !
+
+
 ######################0000000000000########################
 
 # Permet de créer un graph vide comprenant uniquement un point blanc, qui pourra ensuite être utilisé dans les graphes
@@ -168,7 +173,6 @@ panel.shadeNtext <- function (x, y, corr = NULL, col.regions, ...)
 # Ne fonctionne pas pour l'instant, à modifier
 
 
-Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, elt)
 
 elt.trace <- function(element){
 
@@ -176,14 +180,17 @@ Bd$elt_qual <- quantcut(Bd[,element], q = seq(0, 1, by = 0.2))
 Bd2 <- Bd[,- 3]
 Bd2$elt_qual <- as.factor(Bd2$elt_qual)
 
-cats <- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+# cats <- NULL
+cats <<- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
 
 mca1 <- MCA(Bd2)
 
-mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+#mca1_vars_df <- NULL
+mca1_vars_df <<- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
 
 # data frame with observation coordinates
-mca1_obs_df <- data.frame(mca1$ind$coord)
+# mca1_obs_df <- NULL
+mca1_obs_df <<- data.frame(mca1$ind$coord)
 
 # MCA plot of observations and categories
 ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +

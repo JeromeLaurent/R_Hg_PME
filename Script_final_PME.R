@@ -682,35 +682,8 @@ source("Scripts/data_cleaning.R")
          
     Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Ni_ppm)
     
-    Bd$Ni_qual <- cut(Bd$Ni_ppm, 5)
-    
-    Bd$Ni_qual2 <- quantcut(Bd$Ni_ppm, q = seq(0, 1, by = 0.2))
-    Bd2 <- Bd[,- 3]
-    Bd2$Ni_qual <- as.factor(Bd2$Ni_qual)
-    Bd2$Ni_qual2 <- as.factor(Bd2$Ni_qual2)
-    Bd_quint <- Bd2 [, - 3]
-    Bd_cut <- Bd2 [, - 4]
-    
-    cats <- apply(Bd_quint, 2, function(x) nlevels(as.factor(x)))
-    
-    mca1 <- MCA(Bd_quint)
-    
-    mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
-    
-    # data frame with observation coordinates
-    mca1_obs_df <- data.frame(mca1$ind$coord)
-    
-    # MCA plot of observations and categories
-    ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
-      geom_hline(yintercept = 0, colour = "gray70") +
-      geom_vline(xintercept = 0, colour = "gray70") +
-      geom_point(colour = "gray50", alpha = 0.7) +
-      geom_density2d(colour = "gray80") +
-      geom_text(data = mca1_vars_df, 
-                aes(x = Dim.1, y = Dim.2, 
-                    label = rownames(mca1_vars_df), colour = Variable)) +
-      ggtitle("MCA plot of variables : Ni") +
-      scale_colour_discrete(name = "Variable")
+    elt.trace('Ni_ppm') + ggtitle("MCA plot of Ni")
+
     
     
     ## Cu
@@ -766,7 +739,7 @@ source("Scripts/data_cleaning.R")
     elt.trace('Zn_ppm') + ggtitle("MCA plot of Zn")
     
     
-     
+    
     ## As
     
     As <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = As_ppm, color = Regime_principal)) +
