@@ -50,6 +50,9 @@ BDD_PME$Regime_principal <- factor(BDD_PME$Regime_principal, levels = c( "Carniv
 
 sub_BDD_PME <- BDD_PME[!(is.na(BDD_PME$Cr_ppm)), ]
 
+# Supression détritivore (n=2), scaliphage (n = 2), insectivore (n=1), carnivore (n=7 sur une seule station)
+sub_BDD_PME2 <- sub_BDD_PME[sub_BDD_PME$Regime_principal %in% c("Carnivore", "Omnivore", "Herbivore") & sub_BDD_PME$Regime_alter %in% c("Carnivore_Piscivore", "Carnivore_Invertivore","Omnivore_Invertivore", "Omnivore_Herbivore",  "Herbivore_Periphytophage", "Herbivore","Herbivore_Phyllophage") ,]
+
 
 ######################0000000000000########################
 
