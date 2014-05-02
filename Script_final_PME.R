@@ -666,18 +666,18 @@ source("Scripts/data_cleaning.R")
     
     ## Se
     
-    Se <- ggplot(sub_BDD_PME2, aes(x = Groupe_station, y = Se_ppm, color = Regime_principal)) +
-      geom_boxplot() +
-      scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", 
-                           labels = c("Carnivore", "Omnivore", "Herbivore")) +
-      ylab("[Se] dans le muscle de poissons, en mg/kg de poids sec") +
-      xlab("Groupe de stations") +
-      ggtitle(expression(paste("[Se] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+#   ggplot(sub_BDD_PME2, aes(x = Groupe_station, y = Se_ppm, color = Regime_principal)) +
+#      geom_boxplot() +
+#      scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique", 
+#                           labels = c("Carnivore", "Omnivore", "Herbivore")) +
+#      ylab("[Se] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Se] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
     
-    ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Se_ppm, color = Regime_alter)) +
+    Se <- ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Se_ppm, color = Regime_alter)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
@@ -690,94 +690,100 @@ source("Scripts/data_cleaning.R")
     
     ## Ni
     
-    Ni <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Ni_ppm, color = Regime_principal)) +
+#   ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Ni_ppm, color = Regime_principal)) +
+#      geom_boxplot() +
+#      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique",
+#                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+#      ylab("[Ni] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Ni] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
+    
+    Ni <-   ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Ni_ppm, color = Regime_alter)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
       ylab("[Ni] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Ni] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Ni_ppm, color = Regime_alter)) +
-      geom_boxplot()
-    
       ### MCA sur Ni
          
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Ni_ppm)
+    Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Ni_ppm)
     
     elt.trace('Ni_ppm') + ggtitle("MCA plot of Ni")
     
-       #V2
-    
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_principal, Ni_ppm)
-    
-    elt.trace('Ni_ppm') + ggtitle("MCA plot of Ni")
-
-    
+          
     
     ## Cu
     
-    Cu <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cu_ppm, color = Regime_principal)) +
-      geom_boxplot() +
-      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
-      ylab("[Cu] dans le muscle de poissons, en mg/kg de poids sec") +
-      xlab("Groupe de stations") +
-      ggtitle(expression(paste("[Cu] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+#    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cu_ppm, color = Regime_principal)) +
+#      geom_boxplot() +
+#      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique",
+#                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+#      ylab("[Cu] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Cu] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
       
       
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cu_ppm, color = Regime_alter)) +
-      geom_boxplot()
+    Cu <-  ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Cu_ppm, color = Regime_alter)) +
+      geom_boxplot() +
+      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      ylab("[Cu] dans le muscle de poissons, en mg/kg de poids sec") +
+      xlab("Groupe de stations") +
+      ggtitle(expression(paste("[Cu] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
  
     
       ## MCA
     
     
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Cu_ppm)
+    Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Cu_ppm)
         
     elt.trace('Cu_ppm') + ggtitle("MCA plot of Cu")
     
-         #V2
-    
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_principal, Cu_ppm)
-    
-    elt.trace('Cu_ppm') + ggtitle("MCA plot of Cu")
+         
     
     
     ## Zn
     
-    Zn <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Zn_ppm, color = Regime_principal)) +
+#   ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Zn_ppm, color = Regime_principal)) +
+#      geom_boxplot() +
+#      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique",
+#                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+#      ylab("[Zn] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Zn] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
+      
+    
+    Zn <- ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Zn_ppm, color = Regime_alter)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
       ylab("[Zn] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Zn] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
-      
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Zn_ppm, color = Regime_alter)) +
-      geom_boxplot()
     
     
        ## MCA
     
     
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Zn_ppm)
-    
-    elt.trace('Zn_ppm') + ggtitle("MCA plot of Zn")
-    
-        # V2
-    
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_principal, Zn_ppm)
+    Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Zn_ppm)
     
     elt.trace('Zn_ppm') + ggtitle("MCA plot of Zn")
     
@@ -798,43 +804,47 @@ source("Scripts/data_cleaning.R")
     
     ## As
     
-    As <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = As_ppm, color = Regime_principal)) +
+   As <- ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = As_ppm, color = Regime_alter)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
       ylab("[As] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[As] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
     
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = As_ppm, color = Regime_alter)) +
-      geom_boxplot()
-    
     
     ## Co
     
-    Co <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Co_ppm, color = Regime_principal)) +
+#    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Co_ppm, color = Regime_principal)) +
+#      geom_boxplot() +
+#      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique",
+#                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+#      ylab("[Co] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Co] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
+    
+    Co <- ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Co_ppm, color = Regime_alter)) +
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
       ylab("[Co] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Co] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Co_ppm, color = Regime_alter)) +
-      geom_boxplot()
     
     
        ## MCA
     
     
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Co_ppm)
+    Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Co_ppm)
     
     elt.trace('Co_ppm') + ggtitle("MCA plot of Co")
     
@@ -842,51 +852,67 @@ source("Scripts/data_cleaning.R")
     
     ## Cd
     
-    Cd <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cd_ppm, color = Regime_principal)) +
-      geom_boxplot() + geom_hline(aes(yintercept = 0.5)) +
+#   ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cd_ppm, color = Regime_principal)) +
+#      geom_boxplot() + geom_hline(aes(yintercept = 0.5)) +
+#      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique",
+#                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+#      ylab("[Cd] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Cd] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
+    
+    Cd <- ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Cd_ppm, color = Regime_alter)) +
+      geom_boxplot() + geom_hline(aes(yintercept = 0.5))  +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
       ylab("[Cd] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cd] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cd_ppm, color = Regime_alter)) +
-      geom_boxplot() + geom_hline(aes(yintercept = 0.5))
     
     
        ## MCA
     
+    # Aucun intérêt ici, pas de conta
     
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Cd_ppm)
+    #Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Cd_ppm)
     
-    elt.trace('Cd_ppm') + ggtitle("MCA plot of Cd")    
+    #elt.trace('Cd_ppm') + ggtitle("MCA plot of Cd")    
     
     
     
     ## Pb
     
-    Pb <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Pb_ppm, color = Regime_principal)) +
-      geom_boxplot() + geom_hline(aes(yintercept = 1.5)) +
+#   ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Pb_ppm, color = Regime_principal)) +
+#      geom_boxplot() + geom_hline(aes(yintercept = 1.5)) +
+#      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique",
+#                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+#      ylab("[Pb] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Pb] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
+    
+    Pb <- ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Pb_ppm, color = Regime_alter)) +
+      geom_boxplot() + geom_hline(aes(yintercept = 2.5))  +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
       ylab("[Pb] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Pb] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Pb_ppm, color = Regime_alter)) +
-      geom_boxplot() + geom_hline(aes(yintercept = 2.5))
-    
     
        ## MCA
     
     
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Pb_ppm)
+    Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Pb_ppm)
     
     elt.trace('Pb_ppm') + ggtitle("MCA plot of Pb")
     
@@ -895,25 +921,32 @@ source("Scripts/data_cleaning.R")
     ## Cr
     
     
-    Cr <- ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cr_ppm, color = Regime_principal)) +
-      geom_boxplot() +
+#   ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cr_ppm, color = Regime_principal)) +
+#      geom_boxplot() +
+#      scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+#                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+#      scale_color_discrete(name = "Régime trophique",
+#                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+#      ylab("[Cr] dans le muscle de poissons, en mg/kg de poids sec") +
+#      xlab("Groupe de stations") +
+#      ggtitle(expression(paste("[Cr] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+    
+    
+    Cr <- ggplot(sub_BDD_PME4, aes(x = Groupe_station, y = Cr_ppm, color = Regime_alter)) +
+      geom_boxplot()+
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore", "Omnivore", "Détritivore", "Herbivore")) +
+                       labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
       ylab("[Cr] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cr] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
     
-    ggplot(sub_BDD_PME, aes(x = Groupe_station, y = Cr_ppm, color = Regime_alter)) +
-      geom_boxplot()
-    
     
         ## MCA
     
     
-    Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Cr_ppm)
+    Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Cr_ppm)
     
     elt.trace('Cr_ppm') + ggtitle("MCA plot of Cr")
     
@@ -922,7 +955,7 @@ source("Scripts/data_cleaning.R")
     
     ### MCA sur Hg
     
-    Bd <- na.omit(select(sub_BDD_PME, Groupe_station, Regime_alter, Hg_ppm))
+    Bd <- na.omit(select(sub_BDD_PME4, Groupe_station, Regime_alter, Hg_ppm))
     
     elt.trace('Hg_ppm') + ggtitle("MCA plot of Hg")
     
