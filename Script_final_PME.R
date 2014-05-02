@@ -108,6 +108,23 @@ source("Scripts/data_cleaning.R")
     
     ######################0000000000000########################
     
+    
+#o# Répartition des régimes en fonction des pressions anthropiques exercées sur les stations
+    
+  ### Repartition des regimes des échantillons ayant du Hg dosés dans les muscles sur chaque station de l'ensemble de la BDD
+    p10 <- ggplot(BDD.sansNA, aes(Pression_anthro)) +
+      geom_bar(aes(fill = Regime_alter), position = "fill") +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) # graduations de l'axe x écrites verticalement
+    # repartition des regimes sur chaque station (sans prendre en compte le nb d'individus)
+    p20 <- ggplot(BDD.sansNA, aes(x = Pression_anthro)) +
+      geom_bar(aes(fill = Regime_alter)) +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    # repartition des regimes sur chaque station (en prenant en compte le nb d'individus)
+    grid.arrange(p10, p20, ncol = 1, nrow = 2, widths = c(1, 1), heights = c(1, 1))    
+    
+    
+    ######################0000000000000########################
+    
 #o# Ensemble de la BDD
     
   ### Impact des pressions anthropiques
