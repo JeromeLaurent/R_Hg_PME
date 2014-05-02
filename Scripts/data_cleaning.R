@@ -50,9 +50,22 @@ BDD_PME$Regime_principal <- factor(BDD_PME$Regime_principal, levels = c( "Carniv
 
 sub_BDD_PME <- BDD_PME[!(is.na(BDD_PME$Cr_ppm)), ]
 
-# Supression détritivore (n=2), scaliphage (n = 2), insectivore (n=1), carnivore (n=7 sur une seule station)
-sub_BDD_PME2 <- sub_BDD_PME[sub_BDD_PME$Regime_principal %in% c("Carnivore", "Omnivore", "Herbivore") & sub_BDD_PME$Regime_alter %in% c("Carnivore_Piscivore", "Carnivore_Invertivore","Omnivore_Invertivore", "Omnivore_Herbivore",  "Herbivore_Periphytophage", "Herbivore","Herbivore_Phyllophage") ,]
+# Supression détritivore (n=2)
 
+sub_BDD_PME2 <- sub_BDD_PME[sub_BDD_PME$Regime_principal %in% c("Carnivore", "Omnivore", "Herbivore"),]
+
+# Supression détritivore (n=2), scaliphage (n = 2), insectivore (n=1), carnivore (n=7 sur une seule station), Omnivore herbivore (n=16 mais uniquement 3 stations)
+
+sub_BDD_PME3 <- sub_BDD_PME[sub_BDD_PME$Regime_alter %in% c("Carnivore_Piscivore", "Carnivore_Invertivore","Omnivore_Invertivore", "Herbivore_Periphytophage", "Herbivore","Herbivore_Phyllophage") ,]
+
+# Tous les herbivores regroupés
+
+sub_BDD_PME4 <- sub_BDD_PME[sub_BDD_PME$Regime_alter %in% c("Carnivore_Piscivore", "Carnivore_Invertivore","Omnivore_Invertivore", "Omnivore_Herbivore", "Herbivore_Periphytophage", "Herbivore","Herbivore_Phyllophage") ,]
+
+levels(sub_BDD_PME4$Regime_alter) <- sub("^Omnivore_Herbivore$", "Omnivore", levels(sub_BDD_PME4$Regime_alter))
+levels(sub_BDD_PME4$Regime_alter) <- sub("^Omnivore_Invertivore$", "Omnivore", levels(sub_BDD_PME4$Regime_alter))
+levels(sub_BDD_PME4$Regime_alter) <- sub("^Herbivore_Periphytophage$", "Herbivore", levels(sub_BDD_PME4$Regime_alter))
+levels(sub_BDD_PME4$Regime_alter) <- sub("^Herbivore_Phyllophage$", "Herbivore", levels(sub_BDD_PME4$Regime_alter))
 
 ######################0000000000000########################
 
