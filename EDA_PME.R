@@ -1953,7 +1953,29 @@ plot(fit) # dendogram with p values
 # add rectangles around groups highly supported by the data
 pvrect(fit, alpha=.95) 
 
+# autres tests
 
+classif = agnes(mca1$ind$coord,method="ward")
+plot(classif,main="Dendrogram",ask=F,which.plots=2,labels=FALSE)
+
+
+clust = cutree(classif,k=3)
+Bd3 <- cbind.data.frame(Bd2, factor(clust))
+res.aux=MCA(tea.comp, graph=F)
+plot(res.aux,invisible=c("quali.sup","var","quanti.sup"),habillage=40)
+
+catdes(Bd3,ncol(Bd3))
+
+Bd4 <-  mca1$ind$coord[, 1:3]
+# Ward Hierarchical Clustering
+d <- dist(Bd4, method = "euclidean") # distance matrix
+fit <- hclust(d, method="ward.D2")
+plot(fit) # display dendogram
+groups <- cutree(fit, k=5) # cut tree into 5 clusters
+# draw dendogram with red borders around the 5 clusters
+rect.hclust(fit, k=5, border="red") 
+
+Bd3 <- cbind.data.frame(Bd3, factor(groups))
 
 ######## Test couleurs
 

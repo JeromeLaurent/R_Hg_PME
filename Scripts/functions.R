@@ -177,13 +177,14 @@ panel.shadeNtext <- function (x, y, corr = NULL, col.regions, ...)
 elt.trace <- function(element){
 
 Bd$elt_qual <- quantcut(Bd[,element], q = seq(0, 1, by = 0.2))
-Bd2 <- Bd[,- 3]
-Bd2$elt_qual <- as.factor(Bd2$elt_qual)
+Bd$elt_qual <- as.factor(Bd$elt_qual)
+Bd2 <<- Bd[,- 3]
+
 
 # cats <- NULL
 cats <<- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
 
-mca1 <- MCA(Bd2)
+mca1 <<- MCA(Bd2)
 
 #mca1_vars_df <- NULL
 mca1_vars_df <<- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))

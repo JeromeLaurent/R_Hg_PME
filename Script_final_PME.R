@@ -20,6 +20,7 @@ require(missMDA)
 require(agricolae)
 # require(xtable)
 require(gtools)
+require(cluster)
 
 source("Scripts/functions.R")
 source("Scripts/data_cleaning.R")
@@ -700,6 +701,12 @@ source("Scripts/data_cleaning.R")
     Bd <- select(sub_BDD_PME, Groupe_station, Regime_alter, Ni_ppm)
     
     elt.trace('Ni_ppm') + ggtitle("MCA plot of Ni")
+    
+       #V2
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_principal, Ni_ppm)
+    
+    elt.trace('Ni_ppm') + ggtitle("MCA plot of Ni")
 
     
     
@@ -728,6 +735,11 @@ source("Scripts/data_cleaning.R")
         
     elt.trace('Cu_ppm') + ggtitle("MCA plot of Cu")
     
+         #V2
+    
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_principal, Cu_ppm)
+    
+    elt.trace('Cu_ppm') + ggtitle("MCA plot of Cu")
     
     
     ## Zn
@@ -755,7 +767,26 @@ source("Scripts/data_cleaning.R")
     
     elt.trace('Zn_ppm') + ggtitle("MCA plot of Zn")
     
+        # V2
     
+    Bd <- select(sub_BDD_PME, Groupe_station, Regime_principal, Zn_ppm)
+    
+    elt.trace('Zn_ppm') + ggtitle("MCA plot of Zn")
+    
+    
+        # Clustering on principal components
+    
+  
+    #http://factominer.free.fr/classical-methods/hierarchical-clustering-on-principal-components.html
+    
+    
+    res.hcpc <- HCPC(mca1, method = "ward.D2") # Création des groupes automatique, si besoin précision ac argument nb.clust
+    
+    res.hcpc$desc.var$test.chi2 # Variables qui caractérisent le mieux la séparation entre les groupes
+    res.hcpc$desc.var$category # Pr chq cluster, informations sur sa composition
+    res.hcpc$desc.ind # indiv caractéristiques de chaque groupe & indiv de chq les plus éloignés des autres groupes
+    
+    # Comment faire apparaître les cluster sur le graphe ?
     
     ## As
     
@@ -879,4 +910,11 @@ source("Scripts/data_cleaning.R")
     elt.trace('Cr_ppm') + ggtitle("MCA plot of Cr")
     
     
+    
+    
+    ### MCA sur Hg
+    
+    Bd <- na.omit(select(sub_BDD_PME, Groupe_station, Regime_alter, Hg_ppm))
+    
+    elt.trace('Hg_ppm') + ggtitle("MCA plot of Hg")
     
