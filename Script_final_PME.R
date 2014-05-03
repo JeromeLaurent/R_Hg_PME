@@ -686,6 +686,12 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Se] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
+    pdf("Graph/Elements_traces/Se.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Se)
+    dev.off()
+    
+    
+    
     dcast(sub_BDD_PME4, Groupe_station ~ Regime_alter, length)
     
     ## Ni
@@ -709,15 +715,31 @@ source("Scripts/data_cleaning.R")
       ylab("[Ni] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Ni] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
+  
     
+    pdf("Graph/Elements_traces/Ni.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Ni)
+    dev.off()
+    
+      
     
       ### MCA sur Ni
          
     Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Ni_ppm)
     
-    elt.trace('Ni_ppm') + ggtitle("MCA plot of Ni")
+    elt.trace('Ni_ppm') 
     
-          
+    MCA_Ni <- p + ggtitle("Analyse des correspondances multiples : Ni") +
+      xlab("Dimension 1. 17,3 % de variance expliquée") +
+      ylab("Dimension 2. 14,8 % de variance expliquée") +
+      scale_colour_discrete(name = "Variable", label = c("Intervalle [Ni] en mg/kg ps", "Groupe de stations", "Régime trophique"))
+    #+ geom_text(label = c ("Chien contaminée", "Chien non contaminée", "NF contaminée", "NF non contaminée", "Trois Sauts", "Carnivore Piscivore", "Carnivore Invertivore", rownames(mca1_vars_df[8:14, ])))
+    
+    
+    pdf("Graph/Elements_traces/MCA_Ni.pdf", width = 14, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(MCA_Ni)
+    dev.off()
+    
     
     ## Cu
     
@@ -742,16 +764,30 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cu] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
- 
+    pdf("Graph/Elements_traces/Cu.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Cu)
+    dev.off()    
+    
+    
     
       ## MCA
     
     
     Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Cu_ppm)
         
-    elt.trace('Cu_ppm') + ggtitle("MCA plot of Cu")
+    elt.trace('Cu_ppm') 
     
-         
+    MCA_Cu <- p + ggtitle("Analyse des correspondances multiples : Cu") +
+      xlab("Dimension 1. 16,3 % de variance expliquée") +
+      ylab("Dimension 2. 15,6 % de variance expliquée") +
+      scale_colour_discrete(name = "Variable", label = c("Intervalle [Cu] en mg/kg ps", "Groupe de stations", "Régime trophique"))
+    #+ geom_text(label = c ("Chien contaminée", "Chien non contaminée", "NF contaminée", "NF non contaminée", "Trois Sauts", "Carnivore Piscivore", "Carnivore Invertivore", rownames(mca1_vars_df[8:14, ])))
+    
+    
+    pdf("Graph/Elements_traces/MCA_Cu.pdf", width = 14, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(MCA_Cu)
+    dev.off()
+    
     
     
     ## Zn
@@ -777,22 +813,67 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Zn] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
-    
+    pdf("Graph/Elements_traces/Zn.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Zn)
+    dev.off()    
     
     
        ## MCA
     
     
     Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Zn_ppm)
+        
+    elt.trace('Zn_ppm') 
     
-    elt.trace('Zn_ppm') + ggtitle("MCA plot of Zn")
+    MCA_Zn <- p + ggtitle("Analyse des correspondances multiples : Zn") +
+      xlab("Dimension 1. 13,6 % de variance expliquée") +
+      ylab("Dimension 2. 12 % de variance expliquée") +
+      scale_colour_discrete(name = "Variable", label = c("Intervalle [Zn] en mg/kg ps", "Groupe de stations", "Régime trophique"))
+    
+    
+    pdf("Graph/Elements_traces/MCA_Zn.pdf", width = 14, height = 9)
+    print(MCA_Zn)
+    dev.off()
+    
+    
+    ########
+    
+    Bd$elt_qual <- quantcut(Bd[,'Zn_ppm'], q = seq(0, 1, by = 0.2))
+    Bd$elt_qual <- as.factor(Bd$elt_qual)
+    Bd2 <- Bd[,- 3]
+    
+    
+    # cats <- NULL
+    cats <- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+    
+    mca1 <- MCA(Bd2)
+    
+    #mca1_vars_df <- NULL
+    mca1_vars_df <<- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+    
+    # data frame with observation coordinates
+    # mca1_obs_df <- NULL
+    mca1_obs_df <<- data.frame(mca1$ind$coord)
+    
+    # MCA plot of observations and categories
+    ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
+      geom_hline(yintercept = 0, colour = "gray70") +
+      geom_vline(xintercept = 0, colour = "gray70") +
+      geom_point(colour = "gray50", alpha = 0.7) +
+      geom_density2d(colour = "gray80") +
+      geom_text(data = mca1_vars_df, 
+                aes(x = Dim.1, y = Dim.2, 
+                    label = rownames(mca1_vars_df), colour = Variable)) +
+      scale_colour_discrete(name = "Variable")
+    
     
     
         # Clustering on principal components
     
   
     #http://factominer.free.fr/classical-methods/hierarchical-clustering-on-principal-components.html
-    
+  
+    # Pb actuel : ne prend pas en compte le vrai jeu de données
     
     res.hcpc <- HCPC(mca1, method = "ward.D2") # Création des groupes automatique, si besoin précision ac argument nb.clust
     
@@ -801,6 +882,8 @@ source("Scripts/data_cleaning.R")
     res.hcpc$desc.ind # indiv caractéristiques de chaque groupe & indiv de chq les plus éloignés des autres groupes
     
     # Comment faire apparaître les cluster sur le graphe ?
+  
+    
     
     ## As
     
@@ -813,7 +896,9 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[As] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
-    
+    pdf("Graph/Elements_traces/As.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(As)
+    dev.off()    
     
     
     ## Co
@@ -838,7 +923,9 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Co] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
-    
+    pdf("Graph/Elements_traces/Co.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Co)
+    dev.off()    
     
     
        ## MCA
@@ -846,9 +933,17 @@ source("Scripts/data_cleaning.R")
     
     Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Co_ppm)
     
-    elt.trace('Co_ppm') + ggtitle("MCA plot of Co")
+    elt.trace('Co_ppm') 
+    
+    MCA_Co <- p + ggtitle("Analyse des correspondances multiples : Co") +
+      xlab("Dimension 1. 16,9 % de variance expliquée") +
+      ylab("Dimension 2. 14,1 % de variance expliquée") +
+      scale_colour_discrete(name = "Variable", label = c("Intervalle [Co] en mg/kg ps", "Groupe de stations", "Régime trophique"))
     
     
+    pdf("Graph/Elements_traces/MCA_Co.pdf", width = 20, height = 9)
+    print(MCA_Co)
+    dev.off()
     
     ## Cd
     
@@ -872,7 +967,9 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cd] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
-    
+    pdf("Graph/Elements_traces/Cd.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Cd)
+    dev.off()    
     
     
        ## MCA
@@ -907,16 +1004,26 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Pb] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
-    
+    pdf("Graph/Elements_traces/Pb.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Pb)
+    dev.off()    
     
        ## MCA
     
     
     Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Pb_ppm)
     
-    elt.trace('Pb_ppm') + ggtitle("MCA plot of Pb")
+    elt.trace('Pb_ppm') 
+    
+    MCA_Pb <- p + ggtitle("Analyse des correspondances multiples : Pb") +
+      xlab("Dimension 1. 17,3 % de variance expliquée") +
+      ylab("Dimension 2. 15,5 % de variance expliquée") +
+      scale_colour_discrete(name = "Variable", label = c("Intervalle [Pb] en mg/kg ps", "Groupe de stations", "Régime trophique"))
     
     
+    pdf("Graph/Elements_traces/MCA_Pb.pdf", width = 14, height = 9)
+    print(MCA_Pb)
+    dev.off()
     
     ## Cr
     
@@ -941,16 +1048,27 @@ source("Scripts/data_cleaning.R")
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cr] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
     
-    
+    pdf("Graph/Elements_traces/Cr.pdf", width = 13, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(Cr)
+    dev.off()    
     
         ## MCA
     
     
     Bd <- select(sub_BDD_PME4, Groupe_station, Regime_alter, Cr_ppm)
     
-    elt.trace('Cr_ppm') + ggtitle("MCA plot of Cr")
+    elt.trace('Cr_ppm') 
     
     
+    MCA_Cr <- p + ggtitle("Analyse des correspondances multiples : Cr") +
+      xlab("Dimension 1. 16,3 % de variance expliquée") +
+      ylab("Dimension 2. 11,5 % de variance expliquée") +
+      scale_colour_discrete(name = "Variable", label = c("Intervalle [Cr] en mg/kg ps", "Groupe de stations", "Régime trophique"))
+    
+    
+    pdf("Graph/Elements_traces/MCA_Cr.pdf", width = 20, height = 10)
+    print(MCA_Cr)
+    dev.off()
     
     
     ### MCA sur Hg

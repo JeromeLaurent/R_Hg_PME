@@ -165,14 +165,6 @@ panel.shadeNtext <- function (x, y, corr = NULL, col.regions, ...)
 
 ######################0000000000000########################
 
-#  /\
-# /||\
-#/ °° \
-#------
-
-# Ne fonctionne pas pour l'instant, à modifier
-
-
 
 elt.trace <- function(element){
 
@@ -189,12 +181,22 @@ mca1 <<- MCA(Bd2)
 #mca1_vars_df <- NULL
 mca1_vars_df <<- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
 
+(mca1_vars_df$Variable) <- sub("^Chien_conta$", "Chien contaminée", levels(mca1_vars_df$Variable))
+
+rownames(mca1_vars_df[1:7,]) <- c("Chien contaminée", "Chien non contaminée", "NF contaminée", "NF non contaminée", "Trois Sauts", "Carnivore Piscivore", "Carnivore Invertivore")
+
+"Chien contaminée", "Chien non contaminée", "NF contaminée", 
+"NF non contaminée", "Trois Sauts", "Carnivore Piscivore", 
+"Carnivore Invertivore"
+
+(rownames(mca1_vars_df[1,])) <- "Chien contaminée"
+
 # data frame with observation coordinates
 # mca1_obs_df <- NULL
 mca1_obs_df <<- data.frame(mca1$ind$coord)
 
 # MCA plot of observations and categories
-ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
+p <<- ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
   geom_hline(yintercept = 0, colour = "gray70") +
   geom_vline(xintercept = 0, colour = "gray70") +
   geom_point(colour = "gray50", alpha = 0.7) +

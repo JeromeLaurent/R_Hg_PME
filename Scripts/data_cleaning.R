@@ -67,6 +67,8 @@ levels(sub_BDD_PME4$Regime_alter) <- sub("^Omnivore_Invertivore$", "Omnivore", l
 levels(sub_BDD_PME4$Regime_alter) <- sub("^Herbivore_Periphytophage$", "Herbivore", levels(sub_BDD_PME4$Regime_alter))
 levels(sub_BDD_PME4$Regime_alter) <- sub("^Herbivore_Phyllophage$", "Herbivore", levels(sub_BDD_PME4$Regime_alter))
 
+sub_BDD_PME4$Regime_alter <- droplevels(sub_BDD_PME4$Regime_alter) # Drop unused levels
+
 ######################0000000000000########################
 
 ###
