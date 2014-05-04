@@ -643,12 +643,46 @@ source("Scripts/data_cleaning.R")
     
        ## Matrice corrélation de l'ACP
     
-    mcor <- cor(res.impute$completeObs)
-    res1 <- cor.mtest(res.impute$completeObs, 0.95)
+    #mcor <- cor(res.impute$completeObs)
+    #res1 <- cor.mtest(res.impute$completeObs, 0.95)
     
-    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05)
-    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05, insig = "pch", method="shade", shade.col=NA, tl.col="black", tl.srt=45,  addCoef.col="black", addcolorlabel="no", order="FPC")
+    #corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05)
+    #corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05, insig = "pch", method="shade", shade.col=NA, tl.col="black", tl.srt=45,  addCoef.col="black", addcolorlabel="no", order="FPC")
     
+    
+       ##### Graph sur l'ensemble des sites
+    # Now extract variables
+    #
+    vPC1 <- res.pca$var$coord[,1]
+    vPC2 <- res.pca$var$coord[,2]
+    vlabs <- rownames(res.pca$var$coord)
+    vPCs <- data.frame(cbind(vPC1,vPC2))
+    rownames(vPCs) <- vlabs
+    colnames(vPCs) <- colnames(PCs)
+    #
+    # and plot them
+    #
+    pv <- ggplot() + theme(aspect.ratio=1) + theme_bw(base_size = 20) 
+    # no data so there's nothing to plot
+    # put a faint circle there, as is customary
+    angle <- seq(-pi, pi, length = 50) 
+    df <- data.frame(x = sin(angle), y = cos(angle)) 
+    pv <- pv + geom_path(aes(x, y), data = df, colour="grey70") 
+    #
+    # add on arrows and variable labels
+    pv <- pv + geom_text(data=vPCs, aes(x=vPC1,y=vPC2,label= c("Cr", "Co", "Ni", "Cu", "Zn", "Cd", "Pb", "Hg")), size=6) +
+      xlab("Composante principale 1. 18,4% de variance expliquée") + ylab("Composante principale 2. 16,3% de variance expliquée") +
+      ggtitle("ACP sur les éléments traces : ensemble des sites") +
+      geom_hline(yintercept = 0, colour = "gray65") +
+      geom_vline(xintercept = 0, colour = "gray65")
+    
+    pv <- pv + geom_segment(data=vPCs, aes(x = 0, y = 0, xend = vPC1*0.9, yend = vPC2*0.9), arrow = arrow(length = unit(1/2, 'picas')), color = "grey30")
+    
+    
+   
+    pdf("Graph/Elements_traces/PCA_ts-sites.pdf", width = 10, height = 10) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(pv)
+    dev.off()
     
     
     # res.MI <- MIPCA(df.elt.trace, scale = TRUE, ncp = 2)
@@ -662,11 +696,47 @@ source("Scripts/data_cleaning.R")
     
         ## Matrice corrélation de l'ACP
     
-    mcor <- cor(res.impute$completeObs)
-    res1 <- cor.mtest(res.impute$completeObs, 0.95)
+   # mcor <- cor(res.impute$completeObs)
+   # res1 <- cor.mtest(res.impute$completeObs, 0.95)
     
-    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05)
-    corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05, insig = "pch", method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no", order="FPC")
+    # corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05)
+    # corrplot(mcor, p.mat = res1[[1]], sig.level = 0.05, insig = "pch", method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no", order="FPC")
+
+    
+    
+   
+    # Now extract variables
+    #
+    vPC1 <- res.acp$var$coord[,1]
+    vPC2 <- res.acp$var$coord[,2]
+    vlabs <- rownames(res.acp$var$coord)
+    vPCs <- data.frame(cbind(vPC1,vPC2))
+    rownames(vPCs) <- vlabs
+    colnames(vPCs) <- colnames(PCs)
+    #
+    # and plot them
+    #
+    pv <- ggplot() + theme(aspect.ratio=1) + theme_bw(base_size = 20) 
+    # no data so there's nothing to plot
+    # put a faint circle there, as is customary
+    angle <- seq(-pi, pi, length = 50) 
+    df <- data.frame(x = sin(angle), y = cos(angle)) 
+    pv <- pv + geom_path(aes(x, y), data = df, colour="grey70") 
+    #
+    # add on arrows and variable labels
+    pv <- pv + geom_text(data=vPCs, aes(x=vPC1,y=vPC2,label= c("Cr", "Co", "Ni", "Cu", "Zn", "Se", "Cd", "Pb", "Hg")), size=6) +
+      xlab("Composante principale 1. 19,5% de variance expliquée") + ylab("Composante principale 2. 16,1% de variance expliquée") +
+      ggtitle("ACP sur les éléments traces : Camopi et Saül") +
+      geom_hline(yintercept = 0, colour = "gray65") +
+      geom_vline(xintercept = 0, colour = "gray65")
+      
+    pv <- pv + geom_segment(data=vPCs, aes(x = 0, y = 0, xend = vPC1*0.9, yend = vPC2*0.9), arrow = arrow(length = unit(1/2, 'picas')), color = "grey30")
+    
+    
+    pdf("Graph/Elements_traces/PCA_Saul-Camopi.pdf", width = 10, height = 10) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(pv)
+    dev.off()
+    
     
     
     #0000000000000#

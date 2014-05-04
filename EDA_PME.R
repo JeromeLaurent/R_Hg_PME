@@ -1986,6 +1986,12 @@ scales::hue_pal()(14) # code des couleurs utilisées de base par ggplot
 
 # http://stackoverflow.com/questions/19068432/ggplot2-how-to-use-same-colors-in-different-plots-for-same-factor?rq=1
 
+myColors <- scales::hue_pal()(4)
+names(myColors) <- levels(dat$grp)
+colScale <- scale_colour_manual(name = "grp",values = myColors)
++ add colScale aux plots
+
+
 # Graphical Data overview :
 #http://stats.stackexchange.com/questions/4089/graphical-data-overview-summary-function-in-r
 
