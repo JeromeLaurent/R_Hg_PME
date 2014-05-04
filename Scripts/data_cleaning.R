@@ -199,3 +199,9 @@ df.NF.nonconta <- df.NF.nonconta[- nrow(df.NF.nonconta),]
  ### Pour les éléments traces
 
 color <-  c("#F8766D", "#00BFC4", "#C77CFF", "#7CAE00")
+
+ ### Pour isotopie d15N
+
+scales::hue_pal()(10)
+
+colo <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF", "#00B0F6", "#39B600", "#00BFC4", "#00BF7D")

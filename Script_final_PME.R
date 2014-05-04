@@ -426,8 +426,9 @@ source("Scripts/data_cleaning.R")
       geom_text(data = df.reg.org, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.reg.org, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
       geom_errorbar(data = df.reg.org, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
-      scale_color_discrete(name = "Régime trophique",
-                       labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      scale_color_manual(name = "Régime trophique",
+                       labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage"), 
+                       values = colo) +
       ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
@@ -444,8 +445,9 @@ source("Scripts/data_cleaning.R")
       geom_text(data = df.reg.org, aes(x = d15N_mean, y = Hg_foie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.reg.org, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_foie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
       geom_errorbar(data = df.reg.org, aes(ymin = Hg_foie_mean - Hg_foie_se, ymax = Hg_foie_mean + Hg_foie_se, x = d15N_mean, y = Hg_foie_mean, colour = Regime_alter), width = .05) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      scale_color_manual(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage"),
+                         values = colo) +
       ylab("[Hg] dans le foie de poissons, en mg/kg de poids sec") +
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le foie de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
@@ -460,10 +462,11 @@ source("Scripts/data_cleaning.R")
       #  geom_point(aes(color = Regime_alter), alpha = 0.65) +
       geom_point(data = df.reg.org, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter), size = 4) +
       geom_text(data = df.reg.org, aes(x = d15N_mean, y = Hg_branchie_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
-      geom_errorbarh(data = df.reg.org, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .05) + 
+      geom_errorbarh(data = df.reg.org, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_branchie_mean, x = d15N_mean, colour = Regime_alter), height = .01) + 
       geom_errorbar(data = df.reg.org, aes(ymin = Hg_branchie_mean - Hg_branchie_se, ymax = Hg_branchie_mean + Hg_branchie_se, x = d15N_mean, y = Hg_branchie_mean, colour = Regime_alter), width = .05) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      scale_color_manual(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage"),
+                         values = colo) +
       ylab("[Hg] dans les branchies de poissons, en mg/kg de poids sec") +
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans les branchies de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
