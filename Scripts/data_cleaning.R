@@ -190,3 +190,12 @@ df.NF.nonconta <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME
 df.NF.nonconta <- na.omit(df.NF.nonconta)
 df.NF.nonconta <- df.NF.nonconta[- nrow(df.NF.nonconta),]
 
+
+######################0000000000000########################
+
+
+# Création de légendes homogènes au niveau des couleurs
+
+ ### Pour les éléments traces
+
+color <-  c("#F8766D", "#00BFC4", "#C77CFF", "#7CAE00")

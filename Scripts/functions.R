@@ -181,15 +181,15 @@ mca1 <<- MCA(Bd2)
 #mca1_vars_df <- NULL
 mca1_vars_df <<- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
 
-(mca1_vars_df$Variable) <- sub("^Chien_conta$", "Chien contaminée", levels(mca1_vars_df$Variable))
+#(mca1_vars_df$Variable) <- sub("^Chien_conta$", "Chien contaminée", levels(mca1_vars_df$Variable))
 
-rownames(mca1_vars_df[1:7,]) <- c("Chien contaminée", "Chien non contaminée", "NF contaminée", "NF non contaminée", "Trois Sauts", "Carnivore Piscivore", "Carnivore Invertivore")
+#rownames(mca1_vars_df[1:7,]) <- c("Chien contaminée", "Chien non contaminée", "NF contaminée", "NF non contaminée", "Trois Sauts", "Carnivore Piscivore", "Carnivore Invertivore")
 
-"Chien contaminée", "Chien non contaminée", "NF contaminée", 
-"NF non contaminée", "Trois Sauts", "Carnivore Piscivore", 
-"Carnivore Invertivore"
+#"Chien contaminée", "Chien non contaminée", "NF contaminée", 
+#"NF non contaminée", "Trois Sauts", "Carnivore Piscivore", 
+#"Carnivore Invertivore"
 
-(rownames(mca1_vars_df[1,])) <- "Chien contaminée"
+#(rownames(mca1_vars_df[1,])) <- "Chien contaminée"
 
 # data frame with observation coordinates
 # mca1_obs_df <- NULL

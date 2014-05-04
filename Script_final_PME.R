@@ -681,7 +681,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() +
       scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Se] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Se] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -711,7 +711,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Ni] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Ni] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -759,7 +759,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Cu] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cu] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -808,7 +808,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Zn] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Zn] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -891,7 +891,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[As] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[As] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -918,7 +918,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Co] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Co] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -962,7 +962,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() + geom_hline(aes(yintercept = 0.5))  +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Cd] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cd] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -999,7 +999,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot() + geom_hline(aes(yintercept = 2.5))  +
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Pb] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Pb] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
@@ -1043,7 +1043,7 @@ source("Scripts/data_cleaning.R")
       geom_boxplot()+
       scale_x_discrete(limits = c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Trois_Sauts", "Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
-      scale_color_discrete(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore")) +
+      scale_color_manual(name = "Régime trophique", labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore", "Herbivore"), values = color) +
       ylab("[Cr] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab("Groupe de stations") +
       ggtitle(expression(paste("[Cr] dans le muscle de poissons en fonction des groupes de stations et des régimes trophiques")))
