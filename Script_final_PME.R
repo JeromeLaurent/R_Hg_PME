@@ -522,8 +522,9 @@ source("Scripts/data_cleaning.R")
       geom_text(data = df.chien.nonconta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Charognard", "Omnivore Invertivore", "Détritivore", "Périphytophage")), hjust= 0, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.chien.nonconta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
       geom_errorbar(data = df.chien.nonconta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore Charognard", "Omnivore Invertivore", "Détritivore", "Herbivore Périphytophage")) +
+      scale_color_manual(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore Charognard", "Omnivore Invertivore", "Détritivore", "Herbivore Périphytophage"),
+                         values = c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#00B0F6", "#39B600", "#00BFC4", "#00BF7D")) +
       ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone non contaminée de Crique Chien en fonction de ", delta^{15},"N selon les régimes trophiques")))
@@ -544,8 +545,9 @@ source("Scripts/data_cleaning.R")
       geom_text(data = df.chien.conta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage")), hjust=1.02, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.chien.conta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
       geom_errorbar(data = df.chien.conta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage")) +
+      scale_color_manual(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage"),
+                         values = c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF", "#00B0F6", "#39B600", "#00BFC4", "#00BF7D")) +
       ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone contaminée de Crique Chien en fonction de ", delta^{15},"N selon les régimes trophiques")))
@@ -569,8 +571,9 @@ source("Scripts/data_cleaning.R")
       geom_text(data = df.NF.nonconta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Scaliphage", "Charognard", "Omnivore Invertivore",  "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.NF.nonconta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
       geom_errorbar(data = df.NF.nonconta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore Scaliphage", "Carnivore Charognard", "Omnivore Invertivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage")) +
+      scale_color_manual(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore Scaliphage", "Carnivore Charognard", "Omnivore Invertivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage"),
+                         values = c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#9590FF", "#E76BF3", "#39B600", "#00BFC4", "#00BF7D")) +
       ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone non contaminée de Crique Nouvelle France en fonction de ", delta^{15},"N selon les régimes trophiques")))
@@ -592,8 +595,9 @@ source("Scripts/data_cleaning.R")
       geom_text(data = df.NF.conta, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Carnivore Invertivore", "Omnivore Invertivore", "Périphytophage")), hjust= 0, vjust=-1, size = 6.5) +
       geom_errorbarh(data = df.NF.conta, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
       geom_errorbar(data = df.NF.conta, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
-      scale_color_discrete(name = "Régime trophique",
-                           labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore Invertivore", "Herbivore Périphytophage")) +
+      scale_color_manual(name = "Régime trophique",
+                           labels = c("Carnivore Piscivore", "Carnivore Invertivore", "Omnivore Invertivore", "Herbivore Périphytophage"),
+                         values = c("#F8766D", "#A3A500", "#E76BF3", "#39B600")) +
       ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
       xlab(expression(paste(delta^{15},'N'))) +
       ggtitle(expression(paste("[Hg] dans le muscle des poissons de la zone contaminée de Crique Nouvelle France en fonction de ", delta^{15},"N selon les régimes trophiques")))
