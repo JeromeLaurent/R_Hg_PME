@@ -129,34 +129,35 @@ source("Scripts/data_cleaning.R")
 #o# Ensemble de la BDD
     
   ### Impact des pressions anthropiques
+             
     
-    BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro, Regime_principal, Regime_alter, Genre) # Subset plus simple a  manipuler
+    BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro2, Regime_principal, Regime_alter, Genre) # Subset plus simple a  manipuler
     
-    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro, BD, mean)
+    means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro2, BD, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
     
-    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro, data = BD) # Il existe des differences significatives
+    kruskal.test(conc_Hg_muscle_ppm ~ Pression_anthro2, data = BD) # Il existe des differences significatives
     
-    comparison <- kruskal(BD$conc_Hg_muscle_ppm, BD$Pression_anthro, alpha = 0.05, p.adj = "holm")
+    comparison <- kruskal(BD$conc_Hg_muscle_ppm, BD$Pression_anthro2, alpha = 0.05, p.adj = "holm")
     
     posthoc <- comparison[['groups']]
     posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
     
     
-    p0 <- ggplot(BD, aes(x = Pression_anthro , y = conc_Hg_muscle_ppm)) +
+    p0 <- ggplot(BD, aes(x = Pression_anthro2 , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
       stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) + 
       geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
     lettpos <- function(BD) boxplot(BD$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
-    test <- ddply(BD, .(Pression_anthro), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
-    test_f <- merge(test, posthoc, by.x = "Pression_anthro", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    test <- ddply(BD, .(Pression_anthro2), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
-    p0 <- p0 + geom_text(aes(Pression_anthro, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
-      scale_x_discrete(limits = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
-                       labels = c("Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+    p0 <- p0 + geom_text(aes(Pression_anthro2, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+      scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
             x = "Pression anthropique", title = "[Hg] dans les muscles de poissons selon les pressions anthropiques exercées sur les stations") +
       geom_hline(aes(yintercept = 2.5), color = "red")
@@ -501,6 +502,75 @@ source("Scripts/data_cleaning.R")
                                    ncol = 1),
                        legend, ncol = 2, nrow = 1, widths = c(9, 1), heights = c(1, 1)))
     dev.off()
+    
+    
+       ### MCA pour vue d'ensemble
+    
+    # Sélection de toute la BDD
+    Bd <- select(BDD, d15N, d13C, Regime_alter, conc_Hg_muscle_ppm, conc_Hg_foie_ppm, conc_Hg_branchie_ppm)
+    
+    Bd <- Bd[Bd$Regime_alter %in% c("Carnivore_Piscivore", "Carnivore_Insectivore", "Carnivore_Invertivore", "Carnivore", "Omnivore_Invertivore", "Omnivore_Herbivore", "Herbivore_Periphytophage", "Herbivore","Herbivore_Phyllophage") ,]
+    
+    levels(Bd$Regime_alter) <- sub("^Carnivore_Piscivore$", "Piscivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Carnivore_Insectivore$", "Carnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Carnivore_Invertivore$", "Carnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Omnivore_Herbivore$", "Omnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Omnivore_Invertivore$", "Omnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Herbivore_Periphytophage$", "Herbivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Herbivore_Phyllophage$", "Herbivore", levels(Bd$Regime_alter))
+    
+    
+    Bd$Regime_alter <- droplevels(Bd$Regime_alter) # Drop unused levels
+    
+    
+    # Sélection uniquement des valeurs de [Hg] communes à ts les organes
+    Bd <- na.omit(Bd)
+    
+    Bd$Hg_muscle <- quantcut(Bd[,'conc_Hg_muscle_ppm'], q = seq(0, 1, by = 0.2))
+    Bd$Hg_muscle <- as.factor(Bd$Hg_muscle)
+    Bd$Hg_foie <- quantcut(Bd[,'conc_Hg_foie_ppm'], q = seq(0, 1, by = 0.2))
+    Bd$Hg_foie <- as.factor(Bd$Hg_foie)
+    Bd$Hg_branchie <- quantcut(Bd[,'conc_Hg_branchie_ppm'], q = seq(0, 1, by = 0.2))
+    Bd$Hg_branchie <- as.factor(Bd$Hg_branchie)
+    Bd$N <- quantcut(Bd[,'d15N'], q = seq(0, 1, by = 0.2))
+    Bd$N <- as.factor(Bd$N)
+    Bd$C <- quantcut(Bd[,'d13C'], q = seq(0, 1, by = 0.2))
+    Bd$C <- as.factor(Bd$C)
+    
+    
+    Bd2 <- Bd[,c(-4:-6, -1:-2, -11)]
+    
+    
+    # cats <- NULL
+    cats <- apply(Bd2, 2, function(x) nlevels(as.factor(x)))
+    
+    mca1 <- MCA(Bd2)
+    
+    # mca1_vars_df <- NULL
+    mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+    
+    #(rownames(mca1_vars_df[1,])) <- "Chien contaminée"
+    
+    # data frame with observation coordinates
+    # mca1_obs_df <- NULL
+    mca1_obs_df <- data.frame(mca1$ind$coord)
+    
+    # MCA plot of observations and categories
+    p <- ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
+      geom_hline(yintercept = 0, colour = "gray70") +
+      geom_vline(xintercept = 0, colour = "gray70") +
+      geom_point(colour = "gray50", alpha = 0.7) +
+      geom_density2d(colour = "gray80") +
+      geom_text(data = mca1_vars_df, 
+                aes(x = Dim.1, y = Dim.2, 
+                    label = rownames(mca1_vars_df), colour = Variable), size = 8) +
+      ggtitle("Analyse des correspondances multiples : contamination mercurielle") +
+      xlab("Dimension 1. 16,5 % de variance expliquée") +
+      ylab("Dimension 2. 9,7 % de variance expliquée")  +
+      p + scale_colour_discrete(name = "Variable", label = c("Intervalle [Hg] branchie en mg/kg ps", "Intervalle [Hg] foie en mg/kg ps", "Intervalle [Hg] muscle en mg/kg ps", 'Intervalle de d15N', "Régime trophique"))
+    
+    
+        
     
     
     #0000000000000#

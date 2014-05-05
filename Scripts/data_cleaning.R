@@ -108,6 +108,7 @@ BDD$date <- as.factor(BDD$date)
 BDD$Regime_alter <- factor(BDD$Regime_alter, levels = c("Carnivore_Piscivore", "Carnivore_Insectivore", "Carnivore_Invertivore", "Carnivore_Scaliphage", "Carnivore_Charognard", "Carnivore", "Omnivore_Piscivore", "Omnivore_Invertivore", "Omnivore_Insectivore", "Omnivore_Periphytophage", "Omnivore_Herbivore", "Detritivore", "Herbivore_Periphytophage", "Herbivore","Herbivore_Phyllophage", "Inconnu")) 
 BDD$Regime_principal <- factor(BDD$Regime_principal, levels = c( "Carnivore", "Omnivore", "Detritivore", "Herbivore", "Inconnu"))
 BDD$Pression_anthro <- factor(BDD$Pression_anthro, levels = c( "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_legal", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"))
+BDD$Pression_anthro2 <- factor(BDD$Pression_anthro2, levels = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_legal", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"))
 
 
 ######################0000000000000########################
@@ -121,6 +122,8 @@ BDD.sansNA <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ]
 BDD.sansNA$station <- droplevels(BDD.sansNA$station)
 
 BDD.sansNA$Pression_anthro <- droplevels(BDD.sansNA$Pression_anthro)
+
+BDD.sansNA$Pression_anthro2 <- droplevels(BDD.sansNA$Pression_anthro2)
 
 
 ######################0000000000000########################
