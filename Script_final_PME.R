@@ -167,6 +167,25 @@ source("Scripts/data_cleaning.R")
     print(p0)
     dev.off()
 
+    setEPS(horizontal = FALSE, onefile = FALSE, paper = "special")
+    postscript("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.ps", width = 12, height = 9) # la fction postscript enregistre directement ds le dossier et sous format encapsulated posrtscript
+    print(p0)
+    dev.off()
+    
+    win.metafile("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.wmf", width = 12, height = 9) # la fction win.metafile enregistre directement ds le dossier et sous format wmf
+    # Légends lisibles mais points déformés
+    print(p0)
+    dev.off()
+    
+    png("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.png", width = 12, height = 9, units = 'in', res = 300) # la fction png enregistre directement ds le dossier et sous format png
+    # Graphiques conservés mais text flou
+    print(p0)
+    dev.off()
+    
+    tiff("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.tif", width = 12, height = 9, units = 'in', res = 300) # la fction png enregistre directement ds le dossier et sous format png
+    print(p0)
+    dev.off()
+
     
     #0000000000000#
   
@@ -1514,6 +1533,11 @@ source("Scripts/data_cleaning.R")
     print(MCA_Cr)
     dev.off()
     
+    
+    
+    ## Hg
+    
+    # Graphe fction reg. trophiques et stations
     
     ### MCA sur Hg
     
