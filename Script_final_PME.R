@@ -187,6 +187,30 @@ source("Scripts/data_cleaning.R")
     dev.off()
 
     
+    # Détail des stations pr chaque pression anthropique
+    
+    means <- aggregate(conc_Hg_muscle_ppm ~ Code_Station + Pression_anthro2, BDD.sansNA, mean)
+    means$conc_Hg_muscle_ppm <- round(means$conc_Hg_muscle_ppm, digits = 2)
+    
+    means_pressions <- cbind(means, BDD.sansNA$Pression_anthro2)
+    
+    ggplot(BDD.sansNA, aes(x = Code_Station , y = conc_Hg_muscle_ppm)) +
+            geom_boxplot() +
+            stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
+                         shape = 18, size = 3,show_guide = FALSE) + 
+            # geom_text(data = means, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "red") +
+            facet_wrap(~ Pression_anthro2, scales = "free_x") +
+            theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    
+    
+    ggplot(means, aes(x = conc_Hg_muscle_ppm, y = Code_Station, colour = Pression_anthro2)) +
+            geom_segment(aes(yend = Code_Station), xend=0, colour="grey50") +
+            geom_point(size=3) +
+            theme_bw() +
+            theme(panel.grid.major.y = element_blank()) +
+            facet_grid(Pression_anthro2 ~ ., scales="free_y")
+    
+    
     #0000000000000#
   
   ### Impact des pressions anthropiques sur les régimes principaux
