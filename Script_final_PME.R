@@ -160,7 +160,7 @@ source("Scripts/data_cleaning.R")
                        labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
             x = "Pression anthropique", title = "[Hg] dans les muscles de poissons selon les pressions anthropiques exercées sur les stations") +
-      geom_hline(aes(yintercept = 2.5), color = "red")
+      geom_hline(aes(yintercept = 2.5), color = "red") + theme_bw()
     
     
     pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
@@ -186,6 +186,9 @@ source("Scripts/data_cleaning.R")
     print(p0)
     dev.off()
 
+    jpeg("Graph/Pression_anthropique/Hg-muscle_pression-anthropique2.jpg", width = 12, height = 9, units = 'in', res = 300) # la fction png enregistre directement ds le dossier et sous format png
+    print(p0)
+    dev.off()
     
     # Détail des stations pr chaque pression anthropique
     
@@ -210,6 +213,27 @@ source("Scripts/data_cleaning.R")
             theme(panel.grid.major.y = element_blank()) +
             facet_grid(Pression_anthro2 ~ ., scales="free_y")
     
+    
+    
+    ## Est ce que des espèces communes existent entre les stations soumises à déforestation et orpaillage ?
+    
+    def <- BDD.sansNA[BDD.sansNA$Pression_anthro2 %in% "Deforestation", ]
+    orp <- BDD.sansNA[BDD.sansNA$Pression_anthro2 %in% "Orpaillage_illegal" |
+                              BDD.sansNA$Pression_anthro2 %in% "Orpaillage_ancien", ]
+    
+    
+    sp <- intersect(def$Code, orp$Code)
+    
+    deforp <- BDD.sansNA[BDD.sansNA$Pression_anthro2 %in% "Orpaillage_illegal" |
+                                BDD.sansNA$Pression_anthro2 %in% "Orpaillage_ancien" |
+                                BDD.sansNA$Pression_anthro2 %in% "Deforestation", ]
+    
+    ggplot(deforp, aes(x = Code, y = conc_Hg_muscle_ppm, color = Pression_anthro2)) +
+            geom_boxplot() +
+            scale_x_discrete(limits = sp)
+    
+    
+    ftable(xtabs(~ Pression_anthro2 + Code, data = deforp))
     
     #0000000000000#
   
@@ -669,7 +693,7 @@ source("Scripts/data_cleaning.R")
     print(pCC)    
     dev.off()
     
-   # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_conta", ]$Regime_alter),decreasing=TRUE)
+    # sort(table(BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)) & BDD_PME$Groupe_station %in% "Chien_conta", ]$Regime_alter),decreasing=TRUE)
     
     #0000000000000#
     
