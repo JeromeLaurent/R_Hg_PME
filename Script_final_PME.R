@@ -66,6 +66,19 @@ source("Scripts/data_cleaning.R")
     
     #arrange the plots together, with appropriate height and width for each row and column
     grid.arrange(plot_top, empty, scatter, plot_right, ncol = 2, nrow = 2, widths = c(4, 1), heights = c(1, 4))
+    
+    
+    # two dimensional density plot ggplot2
+    
+    dens <- ggplot(BDD_PME, aes(x = ls_mm, y = pds_g)) + 
+            #geom_point() +
+            stat_density2d(aes(fill=..density..), geom="raster", contour=FALSE, h=c(5,2.5)) +
+            expand_limits(x = 0, y = 0) +
+            scale_x_continuous(limits = c(0, 150), expand = c(0, 0)) + 
+            scale_y_continuous(limits = c(0, 50), expand = c(0, 0)) + # 2 Hoplias aimara de presque 2 kg qui entrainent le tassement de la majorite du jeu de donnees
+            scale_fill_continuous(low = "white", high = "black") +
+            labs( x = "Longueur standard (mm)", y = "Masse (g)") +
+            theme_bw()
   
 
     ######################0000000000000########################
@@ -93,7 +106,7 @@ source("Scripts/data_cleaning.R")
     
     ######################0000000000000########################
     
-#o# Répartition des régimes au niveau des trois stations les plus étudiées (Crique Chien, Crique Nouvelle-france et 3 Sauts)
+#o# Répartition des régimes au niveau des toutes les stations
     
   ### Repartition des regimes des échantillons ayant du Hg dosés dans les muscles sur chaque station de l'ensemble de la BDD
     p10 <- ggplot(BDD.sansNA, aes(Code_Station)) +
@@ -153,9 +166,11 @@ source("Scripts/data_cleaning.R")
     test <- ddply(BD, .(Pression_anthro2), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
-    colnames(test_f)[4] <- "signif"
+    colnames(test_f)[4] <- "signif"    
+    n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+            stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
@@ -190,7 +205,7 @@ source("Scripts/data_cleaning.R")
     print(p0)
     dev.off()
     
-    # Détail des stations pr chaque pression anthropique
+    # Détail des moyennes de Hg par station pr chaque pression anthropique
     
     means <- aggregate(conc_Hg_muscle_ppm ~ Code_Station + Pression_anthro2, BDD.sansNA, mean)
     means$conc_Hg_muscle_ppm <- round(means$conc_Hg_muscle_ppm, digits = 2)
@@ -205,13 +220,16 @@ source("Scripts/data_cleaning.R")
             facet_wrap(~ Pression_anthro2, scales = "free_x") +
             theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
     
+    # Modification du nom des facets en remplaçant les niveaux du facteur par des chiffres
+        means$Pression_anthro2 <- mapvalues(means$Pression_anthro2, from = c("Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"), to = c(1:8))
     
-    ggplot(means, aes(x = conc_Hg_muscle_ppm, y = Code_Station, colour = Pression_anthro2)) +
+    ggplot(means, aes(x = conc_Hg_muscle_ppm, y = Code_Station)) +
             geom_segment(aes(yend = Code_Station), xend=0, colour="grey50") +
-            geom_point(size=3) +
+            geom_point(size=3, aes(colour = Pression_anthro2), show_guide = FALSE) +
             theme_bw() +
+            labs( x = "[Hg] moyenne dans les muscles de poissons (mg/kg ps)", y = "Code des stations") +
             theme(panel.grid.major.y = element_blank()) +
-            facet_grid(Pression_anthro2 ~ ., scales="free_y")
+            facet_grid(Pression_anthro2 ~ ., scales="free_y", space = "free")
     
     
     
@@ -352,19 +370,24 @@ source("Scripts/data_cleaning.R")
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"
+    n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+            stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
             x = "Pression anthropique", title = "[Hg] dans les muscles d'omnivores invertivores selon les pressions anthropiques exercées sur les stations") +
-      geom_hline(aes(yintercept = 2.5), color = "red")
+      geom_hline(aes(yintercept = 2.5), color = "red") +  theme_bw()
     
     
     pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
+    jpeg("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.jpg", width = 12, height = 9, units = 'in', res = 300) # la fction png enregistre directement ds le dossier et sous format png
+    print(p0)
+    dev.off()
     
     # Carnivores Invertivores
     
@@ -389,18 +412,21 @@ source("Scripts/data_cleaning.R")
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"
+    n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
-      scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+            stat_summary(fun.data = n_fun, geom = "text") +
+        scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
             x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores invertivores selon les pressions anthropiques exercées sur les stations") +
-      geom_hline(aes(yintercept = 2.5), color = "red")
+      geom_hline(aes(yintercept = 2.5), color = "red") + theme_bw()
     
     
     pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
+    
     
     # Carnivores Piscivores
     
@@ -426,12 +452,15 @@ source("Scripts/data_cleaning.R")
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"
+    n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper - 0.5, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+            stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c("Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
-            x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores piscivores selon les pressions anthropiques exercées sur les stations")
+            x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores piscivores selon les pressions anthropiques exercées sur les stations") +
+            theme_bw()
       
     
     

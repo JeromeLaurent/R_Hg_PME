@@ -87,7 +87,7 @@ empty <- ggplot()+geom_point(aes(1,1), colour="white") +
 
 #### pds fction de longueur
 scatter <- ggplot(BDD_PME, aes(x = ls_mm, y = pds_g)) + 
-  geom_point(aes(color = Regime_alter, shape = Regime_principal)) + 
+  geom_point(aes(color = Regime_alter, shape = Regime_principal), alpha = 0.5) +
   theme(legend.position = c(1, 1), legend.justification = c(1, 1)) +
   scale_x_continuous(limits = c(0, 200)) + 
   scale_y_continuous(limits = c(0, 100)) # 2 Hoplias aimara de presque 2 kg qui entrainent le tassement de la majorite du jeu de donnees
@@ -121,6 +121,25 @@ scatter <- ggplot(BDD_PME, aes(x = ls_mm, y = pds_g)) +
   scale_x_continuous(limits = c(0, 200)) + 
   scale_y_continuous(limits = c(0, 100)) #+ # 2 Hoplias aimara de presque 2 kg qui entrainent le tassement de la majorite du jeu de donnees
 #geom_smooth(aes(color = Regime_alter), method = "loess")
+
+# two dimensional density plot ggplot2
+        dens <- ggplot(BDD_PME, aes(x = ls_mm, y = pds_g)) + 
+        #geom_point() +
+        stat_density2d(aes(fill=..density..), geom="raster", contour=FALSE, h=c(5,2.5)) +
+        expand_limits(x = 0, y = 0) +
+        scale_x_continuous(limits = c(0, 150), expand = c(0, 0)) + 
+        scale_y_continuous(limits = c(0, 50), expand = c(0, 0)) + # 2 Hoplias aimara de presque 2 kg qui entrainent le tassement de la majorite du jeu de donnees
+        scale_fill_continuous(low = "white", high = "black") +
+        theme_bw()
+
+ggplot(BDD_PME, aes(x = ls_mm, y = pds_g)) +
+        stat_density2d(aes(alpha=..level..), geom="polygon") +
+        scale_alpha_continuous(limits=c(0,0.2),breaks=seq(0,0.2,by=0.025))+
+        geom_point(colour="red",alpha=0.2)+
+        theme_bw() +
+        scale_x_continuous(limits = c(0, 200)) + 
+        scale_y_continuous(limits = c(0, 100)) # 2 Hoplias aimara de presque 2 kg qui entrainent le tassement de la majorite du jeu de donnees
+
 
 
 #### Distribution poids des individus
@@ -2002,3 +2021,14 @@ chart.Correlation(iris[,1:4],col=iris$Species)
 # ?scatterplot.matrix() from car package
 
 library(fitdistrplus)
+
+
+
+pl1 <- ggplot(BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ], aes(x = d13C, y = conc_Hg_muscle_ppm)) +
+  # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
+  geom_point(data = df.reg.org, aes(x = d13C_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
+  geom_text(data = df.reg.org, aes(x = d13C_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5)
+ 
+
+
+length(BDD[!(is.na(BDD$pds_g)) & !(is.na(BDD$ls_mm)), ])
