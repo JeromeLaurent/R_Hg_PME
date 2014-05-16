@@ -132,7 +132,7 @@ BDD.sansNA$Pression_anthro2 <- droplevels(BDD.sansNA$Pression_anthro2)
 ## Mise en forme données pour graphiques [hg] en fonction de d15N
 #
 
-# Intégralité BDD
+# Intégralité BDD qui possède valeurs dans les 3 organes
 
 df.reg.org <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)) & !(is.na(BDD$conc_Hg_branchie_ppm))
                          & !(is.na(BDD$conc_Hg_foie_ppm)), ] %.% # Selection BDD globale
@@ -143,6 +143,25 @@ df.reg.org <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)) & !(is.n
 
 df.reg.org <- na.omit(df.reg.org)
 
+# Données muscle et d15N
+
+df.reg.muscle <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ] %.% # Selection BDD globale
+        group_by(Regime_alter) %.% # Sélection par régime
+        summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+                  d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+
+df.reg.muscle <- na.omit(df.reg.muscle)
+
+# Données muscle et d15N dans les sites orpaillage + barrage
+
+bdd <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ]
+
+df.reg.conta <- bdd[bdd$Pression_anthro2 == "Reference" | bdd$Pression_anthro2 == "Reference_Trois_Sauts", ] %.% # Selection BDD globale
+        group_by(Regime_alter) %.% # Sélection par régime
+        summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+                  d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+
+df.reg.conta <- na.omit(df.reg.conta)
 
 # Test ratio entre [] dans les divers organes
 df.reg.org <- df.reg.org %.%
@@ -197,7 +216,9 @@ df.NF.nonconta <- df.NF.nonconta[- nrow(df.NF.nonconta),]
 ######################0000000000000########################
 
 
-# Création de légendes homogènes au niveau des couleurs
+# Création de légendes homogènes
+
+        #au niveau des couleurs
 
  ### Pour les éléments traces
 
@@ -208,3 +229,8 @@ color <-  c("#F8766D", "#00BFC4", "#C77CFF", "#7CAE00")
 scales::hue_pal()(10)
 
 colo <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF", "#00B0F6", "#39B600", "#00BFC4", "#00BF7D")
+
+        # au niveau du nom des groupes de stations
+
+limit_groupes <- c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta")
+label_groupes <- c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "NF non contaminée", "NF contaminée")
