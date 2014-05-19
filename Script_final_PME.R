@@ -21,6 +21,8 @@ require(agricolae)
 # require(xtable)
 require(gtools)
 require(cluster)
+require(ade4)
+require(FactoClass)
 
 source("Scripts/functions.R")
 source("Scripts/data_cleaning.R")
@@ -535,31 +537,36 @@ source("Scripts/data_cleaning.R")
     print(pl1)    
     dev.off()
     
+    # nombre d'individus ayant Hg dosé dans muscle
     xtabs(~ Regime_alter, data = BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ])
     
-    xtabs(~ Regime_alter, data = BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)) & !(is.na(BDD$conc_Hg_branchie_ppm))
+    # nombre d'individus ayant Hg dosé dans tous les organes
+    xtabs(~ Regime_alter, data = BDD[!(is.na(BDD$conc_Hg_muscle_ppm))  & !(is.na(BDD$conc_Hg_branchie_ppm))
                                      & !(is.na(BDD$conc_Hg_foie_ppm)), ])
     
     # [Hg] muscle pour tous les individus ayant des concentrations mesurées
     
     pl <- ggplot(BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
             # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
-            geom_point(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 4) +
-            geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("Piscivore", "Insectivore", "Carnivore Invertivore", "Scaliphage", "Charognard", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Périphytophage", "Herbivore","Phyllophage")), hjust=1.02, vjust=-1, size = 6.5) +
+            geom_point(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 2) +
+            geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("1", "2", "3", "4", "5", "6", "7", "8", "9")), hjust = 1.3, vjust = 1.3, size = 6.5) +
             geom_errorbarh(data = df.reg.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
             geom_errorbar(data = df.reg.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
-            #scale_color_manual(name = "Régime trophique",
-             #                  labels = c("Carnivore Piscivore", "Carnivore Insectivore", "Carnivore Invertivore", "Carnivore", "Omnivore Invertivore", "Omnivore Herbivore", "Détritivore", "Herbivore Périphytophage", "Herbivore","Herbivore Phyllophage"), 
-              #                 values = colo) +
+            scale_x_continuous(limits = c(7.5, 11.8)) +
+            scale_color_manual(name = "Régime trophique",
+                               labels = c("1 : Carnivore Piscivore", "2 : Carnivore Insectivore", "3 : Carnivore Invertivore", "4 : Carnivore Charognard", "5 : Omnivore Invertivore", "6 : Omnivore Herbivore", "7 : Détritivore", "8 : Herbivore Périphytophage","9 : Herbivore Phyllophage"),
+                               values = colo2) +
             ylab("[Hg] dans le muscle de poissons, en mg/kg de poids sec") +
             xlab(expression(paste(delta^{15},'N'))) +
             theme_bw() +
             ggtitle(expression(paste("[Hg] dans le muscle de poissons en fonction de ", delta^{15},"N selon les régimes trophiques")))
     
-    pdf("Graph/Hg_isotopie/Hg-muscle-only_d15N_regime.pdf", width = 12, height = 9)
+    pdf("Graph/Hg_isotopie/Hg-muscle-only_d15N_regime2.pdf", width = 8, height = 6)
     print(pl)    
     dev.off()
     
+    
+   
         # id mais dans sites les plus contaminées uniquement
     
     pl <- ggplot(BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
@@ -644,6 +651,55 @@ source("Scripts/data_cleaning.R")
                                    ncol = 1),
                        legend, ncol = 2, nrow = 1, widths = c(9, 1), heights = c(1, 1)))
     dev.off()
+    
+    
+    ###### Organotropisme : rapport des concentrations en Hg pour les différents organes
+    
+       
+    organotropism <- ggplot(df.ratio.conc, aes(x = value, y = Regime_alter)) +
+            geom_segment(aes(yend = Regime_alter), xend=0, colour="grey50") +
+            geom_point(size=3, aes(colour = variable, shape = variable)) +
+            theme_bw() +
+            scale_shape_discrete(guide = FALSE) +
+            scale_color_discrete(name = "Rapport de \nconcentrations", labels =
+                                         c("[muscle]/[foie]", "[muscle]/[branchie]", "[foie]/[branchie]" )) +
+            scale_y_discrete(labels = c("Carnivore \n Piscivore", "Carnivore \n Invertivore", "Omnivore \n Invertivore", "Omnivore \n Herbivore", "Herbivore \n Périphytophage")) +
+            labs( x = "Rapport des concentrations moyennes mesurées dans les organes", y = "Régime trophique") +
+            theme(panel.grid.major.y = element_blank())
+    
+    pdf("Graph/Hg_isotopie/rapport_concentrations_organes.pdf", width = 7, height = 4)
+    print(organotropism)    
+    dev.off()
+    
+    #### ACP
+    
+    res.pca <- PCA(df.sp.ratio, ncp = 3, scale.unit = TRUE, quali.sup = 4) # quali.sup = 5,
+    plotellipses(res.pca,habillage = 5)
+    
+    
+    res.hcpc <- HCPC(res.pca, method = "ward", nb.clust = 5) # Création des groupes automatique, si besoin précision ac argument nb.clust
+    
+    res.hcpc$desc.var$test.chi2 # Variables qui caractérisent le mieux la séparation entre les groupes
+    res.hcpc$desc.var$category # Pr chq cluster, informations sur sa composition
+    res.hcpc$desc.ind # indiv caractéristiques de chaque groupe & indiv de chq les plus éloignés des autres groupes
+    
+    
+    
+    classif = agnes(res.pca$ind$coord,method="ward")
+    plot(classif,main="Dendrogram",ask=F,which.plots=2,labels=FALSE)
+    
+    
+    Bd <-  res.pca$ind$coord[, 1:3]
+    # Ward Hierarchical Clustering
+    d <- dist(Bd, method = "euclidean") # distance matrix
+    fit <- hclust(d, method="ward")
+    plot(fit) # display dendogram
+    groups <- cutree(fit, k=5) # cut tree into 5 clusters
+    # draw dendogram with red borders around the 5 clusters
+    rect.hclust(fit, k=5, border="red") 
+    
+    
+    
     
     
        ### MCA pour vue d'ensemble

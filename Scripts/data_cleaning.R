@@ -147,6 +147,7 @@ df.reg.org <- na.omit(df.reg.org)
 
 df.reg.muscle <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ] %.% # Selection BDD globale
         group_by(Regime_alter) %.% # Sélection par régime
+        filter(Regime_alter != "Carnivore" & Regime_alter != "Carnivore_Scaliphage" & Regime_alter != "Herbivore") %.% # régimes mineurs ou trop flous retirés
         summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
                   d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
 
@@ -164,11 +165,31 @@ df.reg.conta <- bdd[bdd$Pression_anthro2 == "Reference" | bdd$Pression_anthro2 =
 df.reg.conta <- na.omit(df.reg.conta)
 
 # Test ratio entre [] dans les divers organes
-df.reg.org <- df.reg.org %.%
-  group_by(Regime_alter) %.%
-  mutate(muscle.foie = (Hg_muscle_mean / Hg_foie_mean), muscle.branchie = (Hg_muscle_mean / Hg_branchie_mean), branchie.foie = (Hg_branchie_mean / Hg_foie_mean))
+df.reg.org2 <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$conc_Hg_branchie_ppm))
+                  & !(is.na(BDD$conc_Hg_foie_ppm)), ] %.% # Selection BDD globale
+        group_by(Regime_alter) %.% # Sélection par régime
+        summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+                  d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C)), Hg_foie_mean = mean(na.omit(conc_Hg_foie_ppm)),
+                  Hg_foie_se = se(na.omit(conc_Hg_foie_ppm)), Hg_branchie_mean = mean(na.omit(conc_Hg_branchie_ppm)), Hg_branchie_se = se(na.omit(conc_Hg_branchie_ppm))) # Sélection des données à calculer
 
-df <- melt(df.reg.org, id.vars = "Regime_alter", measure.vars = c("muscle.foie", "muscle.branchie", "branchie.foie"))
+df.reg.org2 <- na.omit(df.reg.org2)
+
+df.reg.ratio <- df.reg.org2 %.%
+  group_by(Regime_alter) %.%
+  mutate(muscle.foie = (Hg_muscle_mean / Hg_foie_mean), muscle.branchie = (Hg_muscle_mean / Hg_branchie_mean), foie.branchie = (Hg_foie_mean / Hg_branchie_mean))
+
+df.ratio.conc <- melt(df.reg.ratio, id.vars = "Regime_alter", measure.vars = c("muscle.foie", "muscle.branchie", "foie.branchie"))
+df.ratio.conc <- filter(df.ratio.conc, Regime_alter != "Carnivore" & Regime_alter != "Carnivore_Insectivore" & Regime_alter != "Herbivore" & Regime_alter != "Detritivore" & Regime_alter != "Herbivore_Phyllophage")
+
+df.sp.ratio <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$conc_Hg_branchie_ppm))
+                & !(is.na(BDD$conc_Hg_foie_ppm)), ] %.%
+        group_by(ID_general) %.%
+        select(ID_general, conc_Hg_muscle_ppm, conc_Hg_foie_ppm, conc_Hg_branchie_ppm, Regime_alter) %.%# Sélection des données à calculer
+        mutate(muscle.foie = (conc_Hg_muscle_ppm / conc_Hg_foie_ppm), muscle.branchie = (conc_Hg_muscle_ppm / conc_Hg_branchie_ppm), foie.branchie = (conc_Hg_foie_ppm / conc_Hg_branchie_ppm))
+
+df.sp.ratio <- as.data.frame(df.sp.ratio)
+df.sp.ratio$Regime_alt <- df.sp.ratio$Regime_alter
+df.sp.ratio <- df.sp.ratio[, -c(1:5)]
 
 # Données uniquement de 3 Sauts, Crique Chien et Nouvelle France
 df.PME <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)), ] %.% # Selection BDD_PME
@@ -228,7 +249,11 @@ color <-  c("#F8766D", "#00BFC4", "#C77CFF", "#7CAE00")
 
 scales::hue_pal()(10)
 
-colo <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF", "#00B0F6", "#39B600", "#00BFC4", "#00BF7D")
+colo <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF",
+           "#00B0F6", "#39B600", "#00BFC4", "#00BF7D") # 10 couleurs
+colo2 <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF",
+            "#00B0F6", "#39B600", "#00BF7D") # 9 couleurs
+
 
         # au niveau du nom des groupes de stations
 
