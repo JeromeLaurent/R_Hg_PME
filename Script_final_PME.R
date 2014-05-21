@@ -128,13 +128,21 @@ source("Scripts/data_cleaning.R")
 #o# Répartition des régimes en fonction des pressions anthropiques exercées sur les stations
     
   ### Repartition des regimes des échantillons ayant du Hg dosés dans les muscles sur chaque station de l'ensemble de la BDD
+    
+   
     p10 <- ggplot(BDD.sansNA, aes(Pression_anthro2)) +
       geom_bar(aes(fill = Regime_alter), position = "fill") +
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) # graduations de l'axe x écrites verticalement
+            theme_bw()
+    
+    
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    
+            
+    
     # repartition des regimes sur chaque station (sans prendre en compte le nb d'individus)
     p20 <- ggplot(BDD.sansNA, aes(x = Pression_anthro2)) +
       geom_bar(aes(fill = Regime_alter)) +
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) # graduations de l'axe x écrites verticalement
     # repartition des regimes sur chaque station (en prenant en compte le nb d'individus)
     grid.arrange(p10, p20, ncol = 1, nrow = 2, widths = c(1, 1), heights = c(1, 1))    
     
@@ -1112,20 +1120,24 @@ source("Scripts/data_cleaning.R")
     test <- ddply(BD, .(Groupe_station), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Groupe_station", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
-    colnames(test_f)[4] <- "signif"
+    colnames(test_f)[4] <- "signif"    
+    n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     Se <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
-      scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
-                       labels = c("Chien non contaminée", "Chien contaminée", "Nouvelle France non contaminée", "Nouvelle France contaminée")) +
+            theme_bw() +
+            stat_summary(fun.data = n_fun, geom = "text") +
+            scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
+                       labels = c("Chien non \ncontaminée", "Chien \ncontaminée", "Nouvelle France \nnon contaminée", "Nouvelle France \ncontaminée")) +
       labs( y = "[Se] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Se] dans le muscle de poissons en fonction des groupes de stations")
     
     
     
     
-    pdf("Graph/Elements_traces/Se_stations.pdf", width = 11, height = 7) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Elements_traces/Se_stations.pdf", width = 5, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(Se)
     dev.off()
     
+        
     dcast(sub_BDD_PME4, Groupe_station ~ Regime_alter, length)
     
     ## Ni
@@ -1157,41 +1169,41 @@ source("Scripts/data_cleaning.R")
     
     
     BD <- sub_BDD_PME 
-    means <- aggregate(Ni_ppm ~  Groupe_station, BD, mean)
+    means <- aggregate(Ni_ppm ~  Site, BD, mean)
     means$Ni_ppm <- round(means$Ni_ppm, digits = 2)
     
-    kruskal.test(Ni_ppm ~ Groupe_station, data = BD) # Il existe des differences significatives
+    kruskal.test(Ni_ppm ~ Site, data = BD) # Il existe des differences significatives
     
-    comparison <- kruskal(BD$Ni_ppm, BD$Groupe_station, alpha = 0.05, p.adj = "holm")
+    comparison <- kruskal(BD$Ni_ppm, BD$Site, alpha = 0.05, p.adj = "holm")
     
     posthoc <- comparison[['groups']]
     posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
     
     
-    p0 <- ggplot(BD, aes(x = Groupe_station , y = Ni_ppm)) +
+    p0 <- ggplot(BD, aes(x = Site , y = Ni_ppm)) +
       geom_boxplot() +
       stat_summary(fun.y = mean, colour = "blue", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) #+ 
       #geom_text(data = means, aes(label = Ni_ppm, y = Ni_ppm + 0.08), color = "blue")
     lettpos <- function(BD) boxplot(BD$Ni_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
-    test <- ddply(BD, .(Groupe_station), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
-    test_f <- merge(test, posthoc, by.x = "Groupe_station", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    test <- ddply(BD, .(Site), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Site", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"
+    n_fun <- function(x){return(data.frame(y = -0.3, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
-    Ni <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
-      scale_x_discrete(limits = limit_groupes,
-                       labels = label_groupes) +
-      labs( y = "[Ni] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Ni] dans le muscle de poissons en fonction des groupes de stations") +
-      geom_hline(aes(yintercept = 2.5), color = "red")
+    Ni <- p0 + geom_text(aes(Site, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+            scale_x_discrete(limits = c("Trois_Sauts", "Camopi", "Saul"),
+                             labels = c("Trois Sauts", "Crique Chien", "Crique \nNouvelle France")) +
+            stat_summary(fun.data = n_fun, geom = "text") +
+            theme_bw() +
+      labs( y = "[Ni] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site") 
     
     
     
-    pdf("Graph/Elements_traces/Ni_stations.pdf", width = 11, height = 7) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Elements_traces/Ni_stations2.pdf", width = 5, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(Ni)
     dev.off()
-    
-    
     
     
       ### MCA sur Ni
@@ -1266,6 +1278,7 @@ source("Scripts/data_cleaning.R")
     Cu <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
       scale_x_discrete(limits = limit_groupes,
                        labels = label_groupes) +
+            theme_bw() +
       labs( y = "[Cu] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Cu] dans le muscle de poissons en fonction des groupes de stations")
       
     
@@ -1351,6 +1364,7 @@ source("Scripts/data_cleaning.R")
     Zn <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
       scale_x_discrete(limits = limit_groupes,
                        labels = label_groupes) +
+            theme_bw() +
       labs( y = "[Zn] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Zn] dans le muscle de poissons en fonction des groupes de stations")
     
     
@@ -1500,6 +1514,7 @@ source("Scripts/data_cleaning.R")
     Co <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
       scale_x_discrete(limits = limit_groupes,
                        labels = label_groupes) +
+            theme_bw() +
       labs( y = "[Co] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Co] dans le muscle de poissons en fonction des groupes de stations")
     
     
@@ -1583,6 +1598,7 @@ source("Scripts/data_cleaning.R")
     Cd <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
       scale_x_discrete(limits = limit_groupes,
                        labels = label_groupes) +
+            theme_bw() +
       labs( y = "[Cd] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Cd] dans le muscle de poissons en fonction des groupes de stations")
     
     
@@ -1651,16 +1667,20 @@ source("Scripts/data_cleaning.R")
     test_f <- merge(test, posthoc, by.x = "Groupe_station", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"
+    n_fun <- function(x){return(data.frame(y = -0.1, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     Pb <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
       scale_x_discrete(limits = limit_groupes,
                        labels = label_groupes) +
+            theme_bw() +
+            stat_summary(fun.data = n_fun, geom = "text") +
+            geom_hline(aes(yintercept = 2.5), color = "red")  +
       labs( y = "[Pb] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Pb] dans le muscle de poissons en fonction des groupes de stations")
     
     
     
     
-    pdf("Graph/Elements_traces/Pb_stations.pdf", width = 11, height = 7) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Elements_traces/Pb_stations.pdf", width = 9, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(Pb)
     dev.off()
     
@@ -1712,37 +1732,39 @@ source("Scripts/data_cleaning.R")
     
     
     BD <- sub_BDD_PME 
-    means <- aggregate(Cr_ppm ~  Groupe_station, BD, mean)
+    means <- aggregate(Cr_ppm ~  Site, BD, mean)
     means$Cr_ppm <- round(means$Cr_ppm, digits = 2)
     
-    kruskal.test(Cr_ppm ~ Groupe_station, data = BD) # Il existe des differences significatives
+    kruskal.test(Cr_ppm ~ Site, data = BD) # Il existe des differences significatives
     
-    comparison <- kruskal(BD$Cr_ppm, BD$Groupe_station, alpha = 0.05, p.adj = "holm")
+    comparison <- kruskal(BD$Cr_ppm, BD$Site, alpha = 0.05, p.adj = "holm")
     
     posthoc <- comparison[['groups']]
     posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
     
     
-    p0 <- ggplot(BD, aes(x = Groupe_station , y = Cr_ppm)) +
+    p0 <- ggplot(BD, aes(x = Site , y = Cr_ppm)) +
       geom_boxplot() +
       stat_summary(fun.y = mean, colour = "blue", geom = "point", 
                    shape = 18, size = 3,show_guide = FALSE) #+ 
     #geom_text(data = means, aes(label = Cr_ppm, y = Cr_ppm + 0.08), color = "blue")
     lettpos <- function(BD) boxplot(BD$Cr_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
-    test <- ddply(BD, .(Groupe_station), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
-    test_f <- merge(test, posthoc, by.x = "Groupe_station", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
+    test <- ddply(BD, .(Site), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
+    test_f <- merge(test, posthoc, by.x = "Site", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
-    colnames(test_f)[4] <- "signif"
+    colnames(test_f)[4] <- "signif"    
+    n_fun <- function(x){return(data.frame(y = -0.2, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
-    Cr <- p0 + geom_text(aes(Groupe_station, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
-      scale_x_discrete(limits = limit_groupes,
-                       labels = label_groupes) +
-      labs( y = "[Cr] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Cr] dans le muscle de poissons en fonction des groupes de stations")
+    Cr <- p0 + geom_text(aes(Site, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+      scale_x_discrete(limits = c("Trois_Sauts", "Camopi", "Saul"),
+                       labels = c("Trois Sauts", "Crique Chien", "Crique \nNouvelle France")) +
+            theme_bw() +
+            stat_summary(fun.data = n_fun, geom = "text") +
+      labs( y = "[Cr] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site")
     
+        
     
-    
-    
-    pdf("Graph/Elements_traces/Cr_stations.pdf", width = 11, height = 7) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Elements_traces/Cr_stations2.pdf", width = 5, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(Cr)
     dev.off()
     

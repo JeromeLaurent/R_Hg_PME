@@ -258,4 +258,4 @@ colo2 <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF",
         # au niveau du nom des groupes de stations
 
 limit_groupes <- c("Trois_Sauts", "Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta")
-label_groupes <- c("Trois Sauts", "Chien non contaminée", "Chien contaminée", "NF non contaminée", "NF contaminée")
+label_groupes <- c("Trois Sauts", "Chien non \ncontaminée", "Chien \ncontaminée", "Nouvelle France \nnon contaminée", "Nouvelle France \ncontaminée")
