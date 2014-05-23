@@ -72,7 +72,7 @@ source("Scripts/data_cleaning.R")
     
     # two dimensional density plot ggplot2
     
-    dens <- ggplot(BDD_PME, aes(x = ls_mm, y = pds_g)) + 
+    dens <- ggplot(BDD, aes(x = ls_mm, y = pds_g)) + 
             #geom_point() +
             stat_density2d(aes(fill=..density..), geom="raster", contour=FALSE, h=c(5,2.5)) +
             expand_limits(x = 0, y = 0) +
@@ -130,12 +130,34 @@ source("Scripts/data_cleaning.R")
   ### Repartition des regimes des échantillons ayant du Hg dosés dans les muscles sur chaque station de l'ensemble de la BDD
     
    
-    p10 <- ggplot(BDD.sansNA, aes(Pression_anthro2)) +
+    Bd <- BDD.sansNA
+    
+    levels(Bd$Regime_alter) <- sub("^Carnivore_Charognard$", "Carnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Carnivore_Insectivore$", "Carnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Carnivore_Scaliphage$", "Carnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Omnivore_Herbivore$", "Omnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Omnivore_Piscivore$", "Omnivore", levels(Bd$Regime_alter))
+    levels(Bd$Regime_alter) <- sub("^Herbivore$", "Herbivore_Phyllophage", levels(Bd$Regime_alter))
+    
+    
+    
+    
+    
+    p10 <- ggplot(Bd, aes(Pression_anthro2)) +
       geom_bar(aes(fill = Regime_alter), position = "fill") +
-            theme_bw()
+            theme_bw() +
+            scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                             labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
+            labs( y = "Proportion",
+                  x = "Pression anthropique") +
+            scale_fill_manual(name = "Régime trophique",
+                               labels = c("Carnivore Piscivore", "Carnivore (autres)", "Carnivore Invertivore", "Omnivore (autres)", "Omnivore Invertivore", "Détritivore", "Herbivore Périphytophage", "Herbivore Phyllophage", "Informations manquantes"), 
+                               values = colo8)
     
     
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    pdf("Graph/Pression_anthropique/Repartition-regime_pression-anthropique.pdf", width = 9.5, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(p10)
+    dev.off()
     
             
     
@@ -169,26 +191,26 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD, aes(x = Pression_anthro2 , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
-                   shape = 18, size = 3,show_guide = FALSE) + 
-      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+      stat_summary(fun.y = mean, colour = "blue", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) #+ 
+      #geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
     lettpos <- function(BD) boxplot(BD$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
     test <- ddply(BD, .(Pression_anthro2), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
     colnames(test_f)[4] <- "signif"    
-    n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
+    n_fun <- function(x){return(data.frame(y = -0.1, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
             stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
-                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
             x = "Pression anthropique", title = "[Hg] dans les muscles de poissons selon les pressions anthropiques exercées sur les stations") +
       geom_hline(aes(yintercept = 2.5), color = "red") + theme_bw()
     
     
-    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.pdf", width = 11, height = 7) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique.pdf", width = 9, height = 6) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
 
@@ -220,8 +242,7 @@ source("Scripts/data_cleaning.R")
     means <- aggregate(conc_Hg_muscle_ppm ~ Code_Station + Pression_anthro2, BDD.sansNA, mean)
     means$conc_Hg_muscle_ppm <- round(means$conc_Hg_muscle_ppm, digits = 2)
     
-    means_pressions <- cbind(means, BDD.sansNA$Pression_anthro2)
-    
+      
     ggplot(BDD.sansNA, aes(x = Code_Station , y = conc_Hg_muscle_ppm)) +
             geom_boxplot() +
             stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
@@ -233,7 +254,7 @@ source("Scripts/data_cleaning.R")
     # Modification du nom des facets en remplaçant les niveaux du facteur par des chiffres
         means$Pression_anthro2 <- mapvalues(means$Pression_anthro2, from = c("Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"), to = c(1:8))
     
-    ggplot(means, aes(x = conc_Hg_muscle_ppm, y = Code_Station)) +
+    p <- ggplot(means, aes(x = conc_Hg_muscle_ppm, y = Code_Station)) +
             geom_segment(aes(yend = Code_Station), xend=0, colour="grey50") +
             geom_point(size=3, aes(colour = Pression_anthro2), show_guide = FALSE) +
             theme_bw() +
@@ -241,6 +262,9 @@ source("Scripts/data_cleaning.R")
             theme(panel.grid.major.y = element_blank()) +
             facet_grid(Pression_anthro2 ~ ., scales="free_y", space = "free")
     
+    pdf("Graph/Pression_anthropique/Moyenne_pression-anthropique.pdf", width = 9, height = 6) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    print(p)
+    dev.off()
     
     
     ## Est ce que des espèces communes existent entre les stations soumises à déforestation et orpaillage ?
@@ -372,9 +396,9 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD.omn.inver, aes(x = Pression_anthro2 , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
-                   shape = 18, size = 3,show_guide = FALSE) + 
-      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+      stat_summary(fun.y = mean, colour = "blue", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) #+ 
+      #geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
     lettpos <- function(BD.omn.inver) boxplot(BD.omn.inver$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
     test <- ddply(BD.omn.inver, .(Pression_anthro2), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
@@ -385,17 +409,13 @@ source("Scripts/data_cleaning.R")
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
             stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
-                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
             x = "Pression anthropique", title = "[Hg] dans les muscles d'omnivores invertivores selon les pressions anthropiques exercées sur les stations") +
       geom_hline(aes(yintercept = 2.5), color = "red") +  theme_bw()
     
     
-    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 11, height = 6) # la fction pdf enregistre directement ds le dossier et sous format pdf
-    print(p0)
-    dev.off()
-    
-    jpeg("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.jpg", width = 12, height = 9, units = 'in', res = 300) # la fction png enregistre directement ds le dossier et sous format png
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 8, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -454,9 +474,9 @@ source("Scripts/data_cleaning.R")
     p0 <- ggplot(BD.car.pisc, aes(x = Pression_anthro2 , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
       geom_hline(aes(yintercept = 2.5), color = "red") +
-      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
-                   shape = 18, size = 3,show_guide = FALSE) + 
-      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.15), color = "blue")
+      stat_summary(fun.y = mean, colour = "blue", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) #+ 
+      #geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.15), color = "blue")
     lettpos <- function(BD.car.pisc) boxplot(BD.car.pisc$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
     test <- ddply(BD.car.pisc, .(Pression_anthro2), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
@@ -464,17 +484,17 @@ source("Scripts/data_cleaning.R")
     colnames(test_f)[4] <- "signif"
     n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
-    p0 <- p0 + geom_text(aes(Pression_anthro2, upper - 0.5, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
+    p0 <- p0 + geom_text(aes(Pression_anthro2, upper - 0.6, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
             stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c("Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
-                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
+                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
       labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
-            x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores piscivores selon les pressions anthropiques exercées sur les stations") +
+            x = "Pression anthropique") +
             theme_bw()
       
     
     
-    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-piscivores.pdf", width = 11, height = 6) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-piscivores.pdf", width = 8, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -483,7 +503,7 @@ source("Scripts/data_cleaning.R")
     
   ### Impact des pressions anthropiques chez Mohenkausia
     
-    BD.moen <- BD[BD$Genre %in% "Moenkhausia",]
+    BD.moen <- BD[BD$Genre %in% "Mohenkausia",]
     
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro2, BD.moen, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
@@ -506,12 +526,14 @@ source("Scripts/data_cleaning.R")
     test <- ddply(BD.moen, .(Pression_anthro2), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
     colnames(test_f)[2] <- "upper"
-    colnames(test_f)[4] <- "signif"
+    colnames(test_f)[4] <- "signif"    
+    n_fun <- function(x){return(data.frame(y = 0, label = paste0("n = ", length(x))))}
     test_f$signif <- as.character(test_f$signif) # au cas ou, pour que l'affichage se produise correctement. Pas forcement utile.
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper - 0.5, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
       scale_x_discrete(limits = c("Reference_Trois_Sauts", "Reference", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Trois Sauts", "Référence",  "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
-      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
+            stat_summary(fun.data = n_fun, geom = "text") +
+            labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
             x = "Pression anthropique", title = "[Hg] dans les muscles de Moenkhausia selon les pressions anthropiques exercées sur les stations")
     
     
@@ -1113,9 +1135,9 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD, aes(x = Groupe_station , y = Se_ppm)) +
       geom_boxplot() +
-      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
-                   shape = 18, size = 3,show_guide = FALSE) + 
-    geom_text(data = means, aes(label = Se_ppm, y = Se_ppm + 0.08), color = "blue")
+      stat_summary(fun.y = mean, colour = "blue", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) #+ 
+    #geom_text(data = means, aes(label = Se_ppm, y = Se_ppm + 0.08), color = "blue")
     lettpos <- function(BD) boxplot(BD$Se_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
     test <- ddply(BD, .(Groupe_station), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Groupe_station", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
@@ -1128,7 +1150,7 @@ source("Scripts/data_cleaning.R")
             stat_summary(fun.data = n_fun, geom = "text") +
             scale_x_discrete(limits = c("Chien_non_conta", "Chien_conta", "NF_non_conta", "NF_conta"),
                        labels = c("Chien non \ncontaminée", "Chien \ncontaminée", "Nouvelle France \nnon contaminée", "Nouvelle France \ncontaminée")) +
-      labs( y = "[Se] dans le muscle de poissons, en mg/kg de poids sec",  x = "Site", title = "[Se] dans le muscle de poissons en fonction des groupes de stations")
+      labs( y = "[Se] dans le muscle de poissons, en mg/kg de poids sec",  x = "Groupes de stations")
     
     
     

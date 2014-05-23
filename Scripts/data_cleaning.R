@@ -253,6 +253,7 @@ colo <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF",
            "#00B0F6", "#39B600", "#00BFC4", "#00BF7D") # 10 couleurs
 colo2 <- c( "#F8766D", "#D89000", "#A3A500", "#FF62BC", "#E76BF3", "#9590FF",
             "#00B0F6", "#39B600", "#00BF7D") # 9 couleurs
+colo8 <- c("#F8766D", "#00BE67", "#CD9600", "#00A9FF", "#C77CFF", "#FF61CC", "#00BFC4", "#7CAE00") #8 couleurs ; gris pour NA = "3D3D3D"
 
 
         # au niveau du nom des groupes de stations
