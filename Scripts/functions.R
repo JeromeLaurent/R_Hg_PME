@@ -3,6 +3,7 @@
 ##############################################
 
 
+
 ## IMPORTANT
 
 ## assigner un objet avec <<- permet de le créer en dehors de la fonction !
@@ -202,4 +203,27 @@ p <<- ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
 
 ######################0000000000000########################
 
+# Obtention du mode d'un vecteur
 
+Mode <- function(x) {
+        ux <- unique(x)
+        ux[which.max(tabulate(match(x, ux)))]
+}
+
+
+######################0000000000000########################
+
+# Conversion de nombreuses colonnes d'une dataframe.
+# source : http://stackoverflow.com/questions/11261399/function-for-converting-dataframe-column-type
+
+convert.magic <- function(obj, type){
+        FUN1 <- switch(type,
+                       character = as.character,
+                       numeric = as.numeric,
+                       factor = as.factor)
+        out <- lapply(obj, FUN1)
+        as.data.frame(out)
+}
+
+
+# df[, c("x", "y")] <- convert.magic(df[, c("x", "y")], "factor") # converti les colonnes x et y en facteur

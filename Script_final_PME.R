@@ -410,12 +410,12 @@ source("Scripts/data_cleaning.R")
             stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
-      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
-            x = "Pression anthropique", title = "[Hg] dans les muscles d'omnivores invertivores selon les pressions anthropiques exercées sur les stations") +
-      geom_hline(aes(yintercept = 2.5), color = "red") +  theme_bw()
+      labs( y = "[Hg]muscle (mg/kg ps)",
+            x = "Pression anthropique") +
+            geom_hline(aes(yintercept = 2.5), color = "red") +  theme_bw()
     
     
-    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 8, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_omnivores-invertivores.pdf", width = 8, height = 4) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -434,9 +434,9 @@ source("Scripts/data_cleaning.R")
     
     p0 <- ggplot(BD.car.inver, aes(x = Pression_anthro2 , y = conc_Hg_muscle_ppm)) +
       geom_boxplot() +
-      stat_summary(fun.y = mean, colour = "darkred", geom = "point", 
-                   shape = 18, size = 3,show_guide = FALSE) + 
-      geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
+      stat_summary(fun.y = mean, colour = "blue", geom = "point", 
+                   shape = 18, size = 3,show_guide = FALSE) #+ 
+      #geom_text(data = means.pression, aes(label = conc_Hg_muscle_ppm, y = conc_Hg_muscle_ppm + 0.08), color = "blue")
     lettpos <- function(BD.car.inver) boxplot(BD.car.inver$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
     test <- ddply(BD.car.inver, .(Pression_anthro2), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Pression_anthro2", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
@@ -447,13 +447,13 @@ source("Scripts/data_cleaning.R")
     p0 <- p0 + geom_text(aes(Pression_anthro2, upper + 0.1, label = signif), size = 10, data = test_f, vjust = -2, color = "red") +
             stat_summary(fun.data = n_fun, geom = "text") +
         scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
-                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage ancien",  "Orpaillage illégal récent", "Barrage")) +
-      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
-            x = "Pression anthropique", title = "[Hg] dans les muscles de carnivores invertivores selon les pressions anthropiques exercées sur les stations") +
+                       labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
+      labs( y = "[Hg]muscle (mg/kg ps)",
+            x = "Pression anthropique") +
       geom_hline(aes(yintercept = 2.5), color = "red") + theme_bw()
     
     
-    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-invertivores.pdf", width = 12, height = 9) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-invertivores.pdf", width = 8, height = 4) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -488,13 +488,13 @@ source("Scripts/data_cleaning.R")
             stat_summary(fun.data = n_fun, geom = "text") +
       scale_x_discrete(limits = c("Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
                        labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
-      labs( y = "[Hg] dans les muscles de poissons, en mg/kg de poids sec",
+      labs( y = "[Hg]muscle (mg/kg ps)",
             x = "Pression anthropique") +
             theme_bw()
       
     
     
-    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-piscivores.pdf", width = 8, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
+    pdf("Graph/Pression_anthropique/Hg-muscle_pression-anthropique_carnivores-piscivores.pdf", width = 8, height = 4) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p0)
     dev.off()
     
@@ -576,13 +576,23 @@ source("Scripts/data_cleaning.R")
     
     # [Hg] muscle pour tous les individus ayant des concentrations mesurées
     
+    # ecart type pour remplacer erreurs standards ; test
+    
+    df.reg.muscle <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ] %.% # Selection BDD globale
+            group_by(Regime_alter) %.% # Sélection par régime
+            filter(Regime_alter != "Carnivore" & Regime_alter != "Carnivore_Scaliphage" & Regime_alter != "Herbivore") %.% # régimes mineurs ou trop flous retirés
+            summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = sd(na.omit(conc_Hg_muscle_ppm)),
+                      d15N_se = sd(na.omit(d15N)), d13C_se = sd(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+    
+    df.reg.muscle <- na.omit(df.reg.muscle)
+    
     pl <- ggplot(BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ], aes(x = d15N, y = conc_Hg_muscle_ppm)) +
             # geom_point(data = df.sp.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, fill = Code), show_guide = FALSE) +
             geom_point(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter), size = 2) +
             geom_text(data = df.reg.muscle, aes(x = d15N_mean, y = Hg_muscle_mean, color = Regime_alter, label = c("1", "2", "3", "4", "5", "6", "7", "8", "9")), hjust = 1.3, vjust = 1.3, size = 6.5) +
             geom_errorbarh(data = df.reg.muscle, aes(xmin = d15N_mean + d15N_se, xmax = d15N_mean - d15N_se, y = Hg_muscle_mean, x = d15N_mean, colour = Regime_alter), height = .025) + 
             geom_errorbar(data = df.reg.muscle, aes(ymin = Hg_muscle_mean - Hg_muscle_se, ymax = Hg_muscle_mean + Hg_muscle_se, x = d15N_mean, y = Hg_muscle_mean, colour = Regime_alter), width = .05) +
-            scale_x_continuous(limits = c(7.5, 11.8)) +
+            #scale_x_continuous(limits = c(7.5, 11.8)) +
             scale_color_manual(name = "Régime trophique",
                                labels = c("1 : Carnivore Piscivore", "2 : Carnivore Insectivore", "3 : Carnivore Invertivore", "4 : Carnivore Charognard", "5 : Omnivore Invertivore", "6 : Omnivore Herbivore", "7 : Détritivore", "8 : Herbivore Périphytophage","9 : Herbivore Phyllophage"),
                                values = colo2) +
