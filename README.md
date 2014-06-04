@@ -58,7 +58,7 @@ Contient :
 
   * heavymetals_fishes
 
-          un fichier regroupant les recherches bibliographiques sur la contamination des poissons en éléments traces
+         un fichier regroupant les recherches bibliographiques sur la contamination des poissons en éléments traces
           
   * les bases de données brutes
   
@@ -66,7 +66,7 @@ Contient :
 
   * BDD_PME
 
-          base de données complète importable sous `R`
+         base de données complète importable sous `R`
          
   * subset_BDD
 
