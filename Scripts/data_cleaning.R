@@ -191,6 +191,9 @@ df.sp.ratio <- as.data.frame(df.sp.ratio)
 df.sp.ratio$Regime_alt <- df.sp.ratio$Regime_alter
 df.sp.ratio <- df.sp.ratio[, -c(1:5)]
 
+df.sp.ratio.melt <- melt(df.sp.ratio, id.vars = "Regime_alt", measure.vars = c("muscle.foie", "muscle.branchie", "foie.branchie"))
+df.sp.ratio.melt <- filter(df.sp.ratio.melt, Regime_alt != "Carnivore" & Regime_alt != "Carnivore_Insectivore" & Regime_alt != "Herbivore" & Regime_alt != "Detritivore" & Regime_alt != "Herbivore_Phyllophage" & variable != "foie.branchie")
+
 # Données uniquement de 3 Sauts, Crique Chien et Nouvelle France
 df.PME <- BDD_PME[!(is.na(BDD_PME$conc_Hg_muscle_ppm)) & !(is.na(BDD_PME$d15N)), ] %.% # Selection BDD_PME
   group_by(Regime_alter) %.% # Selection par régime

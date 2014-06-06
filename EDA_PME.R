@@ -2032,3 +2032,9 @@ pl1 <- ggplot(BDD[!(is.na(BDD$conc_Hg_muscle_ppm)), ], aes(x = d13C, y = conc_Hg
 
 
 length(BDD[!(is.na(BDD$pds_g)) & !(is.na(BDD$ls_mm)), ])
+
+
+ggplot(df.reg, aes(x = time, y = value, color = variable)) + 
+        +     geom_point() +  
+        +     geom_smooth(method=lm, formula = y ~ 0 + x, se = FALSE) + 
+        +     xlab("temps") + ylab("facteur de concentration")

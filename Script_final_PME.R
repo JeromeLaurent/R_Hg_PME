@@ -29,7 +29,7 @@ source("Scripts/data_cleaning.R")
     
     
     
-    # Reprendre le script et remplacer dat$ind par dat[,'ind']
+    # Reprendre le script et remplacer dat$ind par dat[,'ind'] ?
     
     
 
@@ -237,7 +237,7 @@ source("Scripts/data_cleaning.R")
     print(p0)
     dev.off()
     
-    # Détail des moyennes de Hg par station pr chaque pression anthropique
+    ## Détail des moyennes de Hg par station pr chaque pression anthropique
     
     means <- aggregate(conc_Hg_muscle_ppm ~ Code_Station + Pression_anthro2, BDD.sansNA, mean)
     means$conc_Hg_muscle_ppm <- round(means$conc_Hg_muscle_ppm, digits = 2)
@@ -261,6 +261,14 @@ source("Scripts/data_cleaning.R")
             labs( x = "[Hg] moyenne dans les muscles de poissons (mg/kg ps)", y = "Code des stations") +
             theme(panel.grid.major.y = element_blank()) +
             facet_grid(Pression_anthro2 ~ ., scales="free_y", space = "free")
+    
+    # Dans un sens plus classique
+    
+    ggplot(means, aes(y = conc_Hg_muscle_ppm, x = Code_Station)) +
+            geom_segment(aes(xend = Code_Station), yend=0, colour="grey50") +
+            geom_point(size=3, aes(colour = Pression_anthro2), show_guide = FALSE) +
+            theme_bw() +
+            facet_grid(. ~ Pression_anthro2, scales="free_x", space = "free")
     
     pdf("Graph/Pression_anthropique/Moyenne_pression-anthropique.pdf", width = 9, height = 6) # la fction pdf enregistre directement ds le dossier et sous format pdf
     print(p)
@@ -696,7 +704,7 @@ source("Scripts/data_cleaning.R")
     ###### Organotropisme : rapport des concentrations en Hg pour les différents organes
     
        
-    organotropism <- ggplot(df.ratio.conc, aes(x = value, y = Regime_alter)) +
+    ggplot(df.ratio.conc, aes(x = value, y = Regime_alter)) +
             geom_segment(aes(yend = Regime_alter), xend=0, colour="grey50") +
             geom_point(size=3, aes(colour = variable, shape = variable)) +
             theme_bw() +
@@ -707,13 +715,37 @@ source("Scripts/data_cleaning.R")
             labs( x = "Rapport des concentrations moyennes mesurées dans les organes", y = "Régime trophique") +
             theme(panel.grid.major.y = element_blank())
     
-    pdf("Graph/Hg_isotopie/rapport_concentrations_organes.pdf", width = 7, height = 4)
+    # autre version avec boxplot pour améliorer visibilité
+    
+    ggplot(df.sp.ratio.melt, aes(x = Regime_alt, y = value, color = variable)) +
+            geom_boxplot() +
+            scale_x_discrete(limits =c("Carnivore_Piscivore", "Carnivore_Invertivore", "Omnivore_Invertivore", "Omnivore_Herbivore", "Herbivore_Periphytophage"), labels = c("Carnivore \n Piscivore", "Carnivore \n Invertivore", "Omnivore \n Invertivore", "Omnivore \n Herbivore", "Herbivore \n Périphytophage"))
+    
+    organotropism <- ggplot(df.sp.ratio.melt, aes(color = Regime_alt, y = value, x = variable)) +
+            geom_boxplot() +
+            scale_color_discrete(name = "Régime trophique", labels = 
+                                         c("Carnivore Piscivore,\nn = 30", "Carnivore Invertivore, \nn = 81", "Omnivore Invertivore, \nn = 162", "Omnivore Herbivore, \nn = 10", "Herbivore Périphytophage, \nn = 10")) +
+            scale_x_discrete(name = "Ratios", labels =
+                                         c("[muscle]/[foie]", "[muscle]/[branchie]" )) +
+            ylab("Rapport des concentrations moyennes de mercure\nmesurées dans les organes de poissons") +
+            theme_bw()
+    
+     df.krusk <- filter(df.sp.ratio, Regime_alt != "Carnivore" & Regime_alt != "Carnivore_Insectivore" & Regime_alt != "Herbivore" & Regime_alt != "Detritivore" & Regime_alt != "Herbivore_Phyllophage") # simplification de la BDD pour faire comparaison ruskal      
+    
+    kruskal.test(muscle.foie ~ Regime_alt, data = df.krusk)
+    comparison.foie <- kruskal(df.krusk$muscle.foie, df.krusk$Regime_alt, alpha = 0.05, p.adj = "holm")
+    
+    kruskal.test(muscle.branchie ~ Regime_alt, data = df.krusk)
+    comparison.branchie <- kruskal(df.krusk$muscle.branchie, df.krusk$Regime_alt, alpha = 0.05, p.adj = "holm")
+    
+    
+    pdf("Graph/Hg_isotopie/organotropisme.pdf", width = 8, height = 5)
     print(organotropism)    
     dev.off()
     
-    #### ACP
+    #### ACP pour détailler l'organotropisme
     
-    res.pca <- PCA(df.sp.ratio, ncp = 3, scale.unit = TRUE, quali.sup = 4) # quali.sup = 5,
+    res.pca <- PCA(df.sp.ratio, ncp = 3, scale.unit = TRUE,) # quali.sup = 5,
     plotellipses(res.pca,habillage = 5)
     
     
@@ -738,6 +770,56 @@ source("Scripts/data_cleaning.R")
     # draw dendogram with red borders around the 5 clusters
     rect.hclust(fit, k=5, border="red") 
     
+    
+    
+    #### MCA pour détailler organotropisme
+    
+    Bd <- filter(df.sp.ratio, Regime_alt != "Carnivore" & Regime_alt != "Carnivore_Insectivore" & Regime_alt != "Herbivore" & Regime_alt != "Detritivore" & Regime_alt != "Herbivore_Phyllophage")
+    
+        
+    Bd$muscle.foie <- quantcut(Bd[,'muscle.foie'], q = seq(0, 1, by = 0.2))
+    Bd$muscle.foie <- as.factor(Bd$muscle.foie)
+    Bd$muscle.branchie <- quantcut(Bd[,'muscle.branchie'], q = seq(0, 1, by = 0.2))
+    Bd$muscle.branchie <- as.factor(Bd$muscle.branchie)
+    Bd$foie.branchie <- quantcut(Bd[,'foie.branchie'], q = seq(0, 1, by = 0.2))
+    Bd$foie.branchie <- as.factor(Bd$foie.branchie)
+    
+        
+    # cats <- NULL
+    cats <- apply(Bd, 2, function(x) nlevels(as.factor(x)))
+    
+    mca1 <- MCA(Bd)
+    
+    # mca1_vars_df <- NULL
+    mca1_vars_df <- data.frame(mca1$var$coord, Variable = rep(names(cats), cats))
+    
+    #(rownames(mca1_vars_df[1,])) <- "Chien contaminée"
+    
+    # data frame with observation coordinates
+    # mca1_obs_df <- NULL
+    mca1_obs_df <- data.frame(mca1$ind$coord)
+    
+    # MCA plot of observations and categories
+    
+    p <- ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
+            geom_hline(yintercept = 0, colour = "gray70") +
+            geom_vline(xintercept = 0, colour = "gray70") +
+            geom_point(colour = "gray50", alpha = 0.7) +
+            geom_density2d(colour = "gray80") +
+            geom_text(data = mca1_vars_df, 
+                      aes(x = Dim.1, y = Dim.2, 
+                          label = rownames(mca1_vars_df), colour = Variable), size = 6.5) +
+            ggtitle("Analyse des correspondances multiples : organotropisme") +
+            xlab("Dimension 1. 12,8 % de variance expliquée") +
+            ylab("Dimension 2. 9,6 % de variance expliquée") +
+            theme_bw()
+    #p + scale_colour_discrete(name = "Variable", label = c("Intervalle [Hg] branchie en mg/kg ps", "Intervalle [Hg] foie en mg/kg ps", "Intervalle [Hg] muscle en mg/kg ps", 'Intervalle de d15N', "Régime trophique"))
+    
+    res.hcpc = HCPC(mca1, nb.clust = 5, graph = FALSE, method = "ward")
+    
+    res.hcpc$desc.var$test.chi2 # Variables qui caractérisent le mieux la séparation entre les groupes
+    res.hcpc$desc.var$category # Pr chq cluster, informations sur sa composition
+    res.hcpc$desc.ind # indiv caractéristiques de chaque groupe & indiv de chq les plus éloignés des autres groupes
     
     
     
