@@ -6,7 +6,7 @@
 ######################0000000000000########################
 
 ###
-# Chargement BDD_PME comprenant les données PME, c'est à dire les criques Nouvelle-France, Chien et Trois Sauts
+# Chargement BDD_PME comprenant les données des criques Nouvelle-France, Chien et Trois Sauts
 ###
 
 BDD_PME <-read.csv("Data/2014_04_11_subset_BDD.csv", sep=";", stringsAsFactors = FALSE) # Chemin relatif

@@ -152,7 +152,8 @@ source("Scripts/data_cleaning.R")
                   x = "Pression anthropique") +
             scale_fill_manual(name = "Régime trophique",
                                labels = c("Carnivore Piscivore", "Carnivore (autres)", "Carnivore Invertivore", "Omnivore (autres)", "Omnivore Invertivore", "Détritivore", "Herbivore Périphytophage", "Herbivore Phyllophage", "Informations manquantes"), 
-                               values = colo8)
+                               values = colo8,
+                              guide = guide_legend(reverse=TRUE))
     
     
     pdf("Graph/Pression_anthropique/Repartition-regime_pression-anthropique.pdf", width = 9.5, height = 5) # la fction pdf enregistre directement ds le dossier et sous format pdf
@@ -177,6 +178,8 @@ source("Scripts/data_cleaning.R")
              
     
     BD <- select(BDD.sansNA, conc_Hg_muscle_ppm, Pression_anthro2, Regime_principal, Regime_alter, Genre) # Subset plus simple a  manipuler
+    
+    BD <- BD[BD$Pression_anthro2 != "NA",]
     
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro2, BD, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
@@ -240,7 +243,7 @@ source("Scripts/data_cleaning.R")
     ## Détail des moyennes de Hg par station pr chaque pression anthropique
     
     means <- aggregate(conc_Hg_muscle_ppm ~ Code_Station + Pression_anthro2, BDD.sansNA, mean)
-    means$conc_Hg_muscle_ppm <- round(means$conc_Hg_muscle_ppm, digits = 2)
+    means$conc_Hg_muscle_ppm <- round(means$conc_Hg_muscle_ppm, digits = 3)
     
       
     ggplot(BDD.sansNA, aes(x = Code_Station , y = conc_Hg_muscle_ppm)) +
@@ -255,11 +258,12 @@ source("Scripts/data_cleaning.R")
         means$Pression_anthro2 <- mapvalues(means$Pression_anthro2, from = c("Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"), to = c(1:8))
     
     p <- ggplot(means, aes(x = conc_Hg_muscle_ppm, y = Code_Station)) +
-            geom_segment(aes(yend = Code_Station), xend=0, colour="grey50") +
+            geom_segment(aes(yend = Code_Station, colour = Pression_anthro2), xend=0, show_guide = FALSE) +
             geom_point(size=3, aes(colour = Pression_anthro2), show_guide = FALSE) +
             theme_bw() +
-            labs( x = "[Hg] moyenne dans les muscles de poissons (mg/kg ps)", y = "Code des stations") +
-            theme(panel.grid.major.y = element_blank()) +
+            labs( x = "[Hg] moyenne dans les muscles de poissons (mg/kg ps)", y = "Nom des stations subissant une même pression anthropique") +
+            theme(panel.grid.major.y = element_blank(),
+                  axis.text.y  = element_text(size = 8)) +
             facet_grid(Pression_anthro2 ~ ., scales="free_y", space = "free")
     
     # Dans un sens plus classique
@@ -274,6 +278,9 @@ source("Scripts/data_cleaning.R")
     print(p)
     dev.off()
     
+    
+    
+    tapply(BDD.sansNA, "Pression_anthro2")
     
     ## Est ce que des espèces communes existent entre les stations soumises à déforestation et orpaillage ?
     
@@ -390,6 +397,7 @@ source("Scripts/data_cleaning.R")
 
     
     # Omnivores Invertivores
+    
     
     means.pression <- aggregate(conc_Hg_muscle_ppm ~  Pression_anthro2, BD.omn.inver, mean)
     means.pression$conc_Hg_muscle_ppm <- round(means.pression$conc_Hg_muscle_ppm, digits = 2)
@@ -727,7 +735,7 @@ source("Scripts/data_cleaning.R")
                                          c("Carnivore Piscivore,\nn = 30", "Carnivore Invertivore, \nn = 81", "Omnivore Invertivore, \nn = 162", "Omnivore Herbivore, \nn = 10", "Herbivore Périphytophage, \nn = 10")) +
             scale_x_discrete(name = "Ratios", labels =
                                          c("[muscle]/[foie]", "[muscle]/[branchie]" )) +
-            ylab("Rapport des concentrations moyennes de mercure\nmesurées dans les organes de poissons") +
+            ylab("Rapport des concentrations de mercure\nmesurées dans les organes de poissons") +
             theme_bw()
     
      df.krusk <- filter(df.sp.ratio, Regime_alt != "Carnivore" & Regime_alt != "Carnivore_Insectivore" & Regime_alt != "Herbivore" & Regime_alt != "Detritivore" & Regime_alt != "Herbivore_Phyllophage") # simplification de la BDD pour faire comparaison ruskal      
@@ -899,7 +907,8 @@ source("Scripts/data_cleaning.R")
     
     ### Contamination en Hg selon régime alimentaire sur Chien, 3 sauts et Nouvelle France
     
-        
+    means <- aggregate(conc_Hg_muscle_ppm ~  Groupe_station, sub_BDD, mean)
+    means$Se_ppm <- round(means$Se_ppm, digits = 2)        
     
     kruskal.test(conc_Hg_muscle_ppm ~ Groupe_station, data = sub_BDD) # Il existe des differences significatives
     
@@ -910,7 +919,9 @@ source("Scripts/data_cleaning.R")
     
     
     p0 <- ggplot(sub_BDD, aes(x = Groupe_station , y = conc_Hg_muscle_ppm)) +
-            geom_boxplot()
+            geom_boxplot() +
+            stat_summary(fun.y = mean, colour = "blue", geom = "point", 
+                                       shape = 18, size = 3,show_guide = FALSE)
     lettpos <- function(sub_BDD) boxplot(sub_BDD$conc_Hg_muscle_ppm, plot = FALSE)$stats[5,] # determination d'un emplacement > a  la "moustache" du boxplot
     test <- ddply(sub_BDD, .(Groupe_station), lettpos) # Obtention de cette information pour chaque facteur (ici, Date)
     test_f <- merge(test, posthoc, by.x = "Groupe_station", by.y = "trt") # Les 2 tableaux sont reunis par rapport aux valeurs row.names
