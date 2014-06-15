@@ -2038,3 +2038,23 @@ ggplot(df.reg, aes(x = time, y = value, color = variable)) +
         +     geom_point() +  
         +     geom_smooth(method=lm, formula = y ~ 0 + x, se = FALSE) + 
         +     xlab("temps") + ylab("facteur de concentration")
+
+
+ggplot(BDD, aes(x = Pression_anthro2 , y = pds_g)) +
+  geom_boxplot() +
+  scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                   labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage")) +
+  scale_y_continuous(limits = c(0, 200))
+
+ggplot(BDD, aes(x = Pression_anthro2 , y = mean(pds_g, na.rm = TRUE))) +
+  geom_point() +
+  scale_x_discrete(limits = c( "Reference_Trois_Sauts", "Reference", "Agriculture", "Deforestation", "Piste", "Orpaillage_ancien", "Orpaillage_illegal", "Barrage"),
+                   labels = c("Trois Sauts", "Référence", "Agriculture", "Déforestation", "Piste", "Orpaillage \nancien",  "Orpaillage \nillégal récent", "Barrage"))
+
+
+df <- ddply(BDD, .(Pression_anthro2), summarise, moyen = median(pds_g, na.rm = TRUE) )
+
+
+ggplot(BDD, aes(y = conc_Hg_muscle_ppm , x = pds_g)) +
+  geom_point(alpha = 0.4) +
+  scale_x_continuous(limits = c(0, 100))
