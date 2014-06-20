@@ -189,7 +189,6 @@ source("Scripts/data_cleaning.R")
     comparison <- kruskal(BD$conc_Hg_muscle_ppm, BD$Pression_anthro2, alpha = 0.05, p.adj = "holm")
     
     posthoc <- comparison[['groups']]
-    posthoc$trt <- gsub(" ","",posthoc$trt) # Tous les espaces apres le nom doivent etre supprimes pour pouvoir merge par la suite
     
     
     p0 <- ggplot(BD, aes(x = Pression_anthro2 , y = conc_Hg_muscle_ppm)) +
@@ -597,8 +596,8 @@ source("Scripts/data_cleaning.R")
     df.reg.muscle <- BDD[!(is.na(BDD$conc_Hg_muscle_ppm)) & !(is.na(BDD$d15N)), ] %.% # Selection BDD globale
             group_by(Regime_alter) %.% # Sélection par régime
             filter(Regime_alter != "Carnivore" & Regime_alter != "Carnivore_Scaliphage" & Regime_alter != "Herbivore") %.% # régimes mineurs ou trop flous retirés
-            summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = sd(na.omit(conc_Hg_muscle_ppm)),
-                      d15N_se = sd(na.omit(d15N)), d13C_se = sd(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
+            summarise(Hg_muscle_mean = mean(na.omit(conc_Hg_muscle_ppm)), d15N_mean = mean(na.omit(d15N)), Hg_muscle_se = se(na.omit(conc_Hg_muscle_ppm)),
+                      d15N_se = se(na.omit(d15N)), d13C_se = se(na.omit(d13C)), d13C_mean = mean(na.omit(d13C))) # Sélection des données à calculer
     
     df.reg.muscle <- na.omit(df.reg.muscle)
     
